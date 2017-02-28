@@ -61,6 +61,8 @@ from six.moves import xrange  # pylint: disable=redefined-builtin
 from six.moves import zip     # pylint: disable=redefined-builtin
 
 import tensorflow as tf
+tf.python.control_flow_ops = tf
+
 from tensorflow.python.framework import dtypes
 from tensorflow.python.framework import ops
 from tensorflow.python.ops import array_ops

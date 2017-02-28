@@ -23,7 +23,9 @@ import random
 
 import numpy as np
 from six.moves import xrange  # pylint: disable=redefined-builtin
+
 import tensorflow as tf
+tf.python.control_flow_ops = tf
 
 from tensorflow.models.rnn.translate import data_utils
 #from tensorflow.nn import rnn, rnn_cell

@@ -6,7 +6,9 @@ import numpy as np
 # from src.data_util.synth_prepare import SynthGen
 
 import keras.backend as K
+
 import tensorflow as tf
+tf.python.control_flow_ops = tf
 
 def squeeze_dim(x, axis=-1):
     return K.squeeze(x, axis=axis)
