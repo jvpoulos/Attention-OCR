@@ -8,6 +8,8 @@ import cPickle
 import random
 from bucketdata import BucketData
 
+from utils import set_trace
+
 
 class DataGen(object):
     GO = 1
@@ -18,7 +20,11 @@ class DataGen(object):
                  evaluate = False,
                  valid_target_len = float('inf'),
                  img_width_range = (12, 320),
-                 word_len = 30):
+                 #img_width_range = (8, 646),
+              #   word_len = 30):
+              #   word_len=38):
+                 word_len=125):
+
         """
         :param data_root:
         :param annotation_fn:
@@ -28,6 +34,7 @@ class DataGen(object):
         """
 
         img_height = 32
+       # img_height = 121
         self.data_root = data_root
         if os.path.exists(annotation_fn):
             self.annotation_path = annotation_fn
@@ -110,12 +117,21 @@ class DataGen(object):
             img_bw = np.asarray(img_bw, dtype=np.uint8)
             img_bw = img_bw[np.newaxis, :]
 
-        # 'a':97, '0':48
+        # 'a':97 to 'z':122
+        # 'A':65 to 'Z':90
+        # '0':48 to '9':57
+        # '-': 45
+        # '_': 95
+        # '|': 124
+        # 0-9 [1-10], - [11], _ [12], | [13], a-z [14-39], A-Z [40-65]
         word = [self.GO]
         for c in lex:
-            assert 96 < ord(c) < 123 or 47 < ord(c) < 58
+            # assert 96 < ord(c) < 123 or 47 < ord(c) < 58
+            # word.append(
+            #     ord(c) - 97 + 13 if ord(c) > 96 else ord(c) - 48 + 3)
+            assert 44 < ord(c) < 125
             word.append(
-                ord(c) - 97 + 13 if ord(c) > 96 else ord(c) - 48 + 3)
+                ord(c) - 97 + 14 if 96 < ord(c) < 123 else ord(c) - 97 + 40 if 64 < ord(c) < 91 else ord(c)-48+1 if 47 < ord(c) < 58 else ord(c)-45+11 if c=='-' else ord(c)-95+12 if c=='_' else ord(c)-124+13 if c=='|' else ord(c))
         word.append(self.EOS)
         word = np.array(word, dtype=np.int32)
         # word = np.array( [self.GO] +
