@@ -4,7 +4,10 @@ import sys, argparse, logging
 
 import numpy as np
 from PIL import Image
+
 import tensorflow as tf
+tf.python.control_flow_ops = tf
+
 tf.logging.set_verbosity(tf.logging.ERROR)
 sess = tf.Session(config=tf.ConfigProto(allow_soft_placement=True))
 import keras.backend as K

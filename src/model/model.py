@@ -4,8 +4,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from utils import set_trace
-
 import random, time, os, shutil, math, sys, logging
 
 import numpy as np
@@ -274,10 +272,7 @@ class Model(object):
                         num_incorrect = distance.levenshtein(output_valid, ground_valid)
                         if self.visualize:
                             self.visualize_attention(file_list[idx], step_attns[idx], output_valid, ground_valid, num_incorrect>0, real_len)
-                        try:
-                            num_incorrect = float(num_incorrect) / len(ground_valid)
-                        except ZeroDivisionError:
-                            num_incorrect = float(num_incorrect)
+                        num_incorrect = float(num_incorrect) / len(ground_valid)
                         num_incorrect = min(1.0, num_incorrect)
                     else:
                         if output_valid == ground_valid:
