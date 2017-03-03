@@ -9,6 +9,4 @@ python src/launcher.py \
 --log-path=log_gwdb_words.txt \
 --no-load-model \
 --batch-size=8 \
---target-vocab-size=65 \
---num-epoch=10 \
---steps-per-checkpoint=5
+--target-vocab-size=65
