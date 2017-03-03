@@ -5,7 +5,6 @@ python src/launcher.py \
 --data-path=gwdb/word_labels_train.txt \
 --data-base-dir=gwdb \
 --model-dir=model_gwdb \
---output-dir=results_gwdb_words
 --log-path=log_gwdb_words.txt \
 --no-load-model \
 --batch-size=8 \

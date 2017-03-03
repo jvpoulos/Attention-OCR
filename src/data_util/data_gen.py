@@ -20,7 +20,7 @@ class DataGen(object):
                  evaluate = False,
                  valid_target_len = float('inf'),
                  img_width_range = (9, 645),
-                 word_len=37):
+                 word_len=125):
 
         """
         :param data_root:
