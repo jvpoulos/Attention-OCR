@@ -400,7 +400,7 @@ class Model(object):
                         Image.ANTIALIAS)
                 img_data = np.asarray(img, dtype=np.uint8)
                 for idx in range(len(output_valid)):
-                    output_filename = os.path.join(output_dir, 'image_%d.jpg'%(idx))
+                    output_filename = os.path.join(output_dir, 'image_%d.png'%(idx))
                     attention = attentions[idx][:(int(real_len/4)-1)]
 
                     # I have got the attention_orig here, which is of size 32*len(ground_truth), the only thing left is to visualize it and save it to output_filename
