@@ -345,7 +345,8 @@ class Model(object):
         
         # Input feed: encoder inputs, decoder inputs, target_weights, as provided.
         input_feed = {}
-        if not forward_only:
+        #if not forward_only:
+        if True:
             input_feed[K.learning_phase()] = 1
         else:
             input_feed[K.learning_phase()] = 0
