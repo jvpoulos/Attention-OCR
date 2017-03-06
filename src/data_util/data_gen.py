@@ -19,8 +19,8 @@ class DataGen(object):
                  data_root, annotation_fn,
                  evaluate = False,
                  valid_target_len = float('inf'),
-                 img_width_range = (9, 645),
-                 word_len=37):
+                 img_width_range = (12, 320),
+                 word_len=30):
 
         """
         :param data_root:
@@ -122,12 +122,12 @@ class DataGen(object):
         # 0-9 [1-10], - [11], _ [12], | [13], a-z [14-39], A-Z [40-65]
         word = [self.GO]
         for c in lex:
-            # assert 96 < ord(c) < 123 or 47 < ord(c) < 58
-            # word.append(
-            #     ord(c) - 97 + 13 if ord(c) > 96 else ord(c) - 48 + 3)
-            assert 44 < ord(c) < 125
+            assert 96 < ord(c) < 123 or 47 < ord(c) < 58
             word.append(
-                ord(c) - 97 + 14 if 96 < ord(c) < 123 else ord(c) - 97 + 40 if 64 < ord(c) < 91 else ord(c)-48+1 if 47 < ord(c) < 58 else ord(c)-45+11 if c=='-' else ord(c)-95+12 if c=='_' else ord(c)-124+13 if c=='|' else ord(c))
+                ord(c) - 97 + 13 if ord(c) > 96 else ord(c) - 48 + 3)
+            # assert 44 < ord(c) < 125
+            # word.append(
+            #     ord(c) - 97 + 14 if 96 < ord(c) < 123 else ord(c) - 97 + 40 if 64 < ord(c) < 91 else ord(c)-48+1 if 47 < ord(c) < 58 else ord(c)-45+11 if c=='-' else ord(c)-95+12 if c=='_' else ord(c)-124+13 if c=='|' else ord(c))
         word.append(self.EOS)
         word = np.array(word, dtype=np.int32)
         # word = np.array( [self.GO] +
