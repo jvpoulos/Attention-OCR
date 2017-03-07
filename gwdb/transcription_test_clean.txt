@@ -1,4 +1,3 @@
-
 ./line_images_normalized/305-01.png p305
 ./line_images_normalized/305-02.png lettersordersandinstructionsdecember1755
 ./line_images_normalized/305-04.png togotoaplacewhereiamtobecommanded

@@ -1,4 +1,3 @@
-
 ./line_images_normalized/300-02.png 300lettersordersandinstructionsdecember1755
 ./line_images_normalized/300-04.png hoggscompanyifanyopportunityoffers
 ./line_images_normalized/300-05.png youaretobeparticularlyex
