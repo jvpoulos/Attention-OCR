@@ -14,7 +14,7 @@ import tensorflow as tf
 tf.python.control_flow_ops = tf
 
 import keras.backend as K
-from .translate import data_utils
+import data_utils
 
 from .cnn import CNN
 from .seq2seq_model import Seq2SeqModel
