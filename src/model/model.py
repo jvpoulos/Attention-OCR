@@ -9,12 +9,9 @@ import random, time, os, shutil, math, sys, logging
 import numpy as np
 from six.moves import xrange  # pylint: disable=redefined-builtin
 from PIL import Image
-
 import tensorflow as tf
-tf.python.control_flow_ops = tf
-
 import keras.backend as K
-import data_utils
+from tensorflow.models.rnn.translate import data_utils
 
 from .cnn import CNN
 from .seq2seq_model import Seq2SeqModel
