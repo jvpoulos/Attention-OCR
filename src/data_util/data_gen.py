@@ -20,7 +20,8 @@ class DataGen(object):
                  evaluate = False,
                  valid_target_len = float('inf'),
                  img_width_range = (12, 320),
-                 word_len=49):
+                 word_len=64): #sgdb lines
+                 # word_len=49): #gwdb lines
 
         """
         :param data_root:
