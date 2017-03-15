@@ -4,11 +4,10 @@ import os
 import numpy as np
 from PIL import Image
 from collections import Counter
-import cPickle
-import random
-from bucketdata import BucketData
+import _pickle as cPickle
+import random, math
+from data_util.bucketdata import BucketData
 
-from utils import set_trace
 
 
 class DataGen(object):
@@ -20,9 +19,7 @@ class DataGen(object):
                  evaluate = False,
                  valid_target_len = float('inf'),
                  img_width_range = (12, 320),
-                 word_len=64): #sgdb lines
-                 # word_len=49): #gwdb lines
-
+                 word_len = 64): #sgdb lines
         """
         :param data_root:
         :param annotation_fn:
@@ -39,13 +36,13 @@ class DataGen(object):
             self.annotation_path = os.path.join(data_root, annotation_fn)
 
         if evaluate:
-            self.bucket_specs = [(64 / 4, word_len + 2), (108 / 4, word_len + 2),
-                                 (140 / 4, word_len + 2), (256 / 4, word_len + 2),
-                                 (img_width_range[1] / 4, word_len + 2)]
+            self.bucket_specs = [(int(math.floor(64 / 4)), int(word_len + 2)), (int(math.floor(108 / 4)), int(word_len + 2)),
+                                 (int(math.floor(140 / 4)), int(word_len + 2)), (int(math.floor(256 / 4)), int(word_len + 2)),
+                                 (int(math.floor(img_width_range[1] / 4)), int(word_len + 2))]
         else:
-            self.bucket_specs = [(64 / 4, 9 + 2), (108 / 4, 15 + 2),
-                             (140 / 4, 17 + 2), (256 / 4, 20 + 2),
-                             (img_width_range[1] / 4, word_len + 2)]
+            self.bucket_specs = [(int(64 / 4), 9 + 2), (int(108 / 4), 15 + 2),
+                             (int(140 / 4), 17 + 2), (int(256 / 4), 20 + 2),
+                             (int(math.ceil(img_width_range[1] / 4)), word_len + 2)]
 
         self.bucket_min_width, self.bucket_max_width = img_width_range
         self.image_height = img_height
@@ -58,9 +55,13 @@ class DataGen(object):
         self.bucket_data = {i: BucketData()
                             for i in range(self.bucket_max_width + 1)}
 
+    def get_size(self):
+        with open(self.annotation_path, 'r') as ann_file:
+            return len(ann_file.readlines())
+
     def gen(self, batch_size):
         valid_target_len = self.valid_target_len
-        with open(self.annotation_path, 'rb') as ann_file:
+        with open(self.annotation_path, 'r') as ann_file:
             lines = ann_file.readlines()
             random.shuffle(lines)
             for l in lines:
@@ -114,21 +115,12 @@ class DataGen(object):
             img_bw = np.asarray(img_bw, dtype=np.uint8)
             img_bw = img_bw[np.newaxis, :]
 
-        # 'a':97 to 'z':122
-        # 'A':65 to 'Z':90
-        # '0':48 to '9':57
-        # '-': 45
-        # '_': 95
-        # '|': 124
-        # 0-9 [1-10], - [11], _ [12], | [13], a-z [14-39], A-Z [40-65]
+        # 'a':97, '0':48
         word = [self.GO]
         for c in lex:
             assert 96 < ord(c) < 123 or 47 < ord(c) < 58
             word.append(
                 ord(c) - 97 + 13 if ord(c) > 96 else ord(c) - 48 + 3)
-            # assert 44 < ord(c) < 125
-            # word.append(
-            #     ord(c) - 97 + 14 if 96 < ord(c) < 123 else ord(c) - 97 + 40 if 64 < ord(c) < 91 else ord(c)-48+1 if 47 < ord(c) < 58 else ord(c)-45+11 if c=='-' else ord(c)-95+12 if c=='_' else ord(c)-124+13 if c=='|' else ord(c))
         word.append(self.EOS)
         word = np.array(word, dtype=np.int32)
         # word = np.array( [self.GO] +
@@ -139,7 +131,7 @@ class DataGen(object):
 
 
 def test_gen():
-    print 'testing gen_valid'
+    print('testing gen_valid')
     # s_gen = EvalGen('../../data/evaluation_data/svt', 'test.txt')
     # s_gen = EvalGen('../../data/evaluation_data/iiit5k', 'test.txt')
     # s_gen = EvalGen('../../data/evaluation_data/icdar03', 'test.txt')
@@ -147,9 +139,9 @@ def test_gen():
     count = 0
     for batch in s_gen.gen(1):
         count += 1
-        print batch['bucket_id'], batch['data'].shape[2:]
+        print(str(batch['bucket_id']) + ' ' + str(batch['data'].shape[2:]))
         assert batch['data'].shape[2] == img_height
-    print count
+    print(count)
 
 
 if __name__ == '__main__':
