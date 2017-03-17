@@ -35,10 +35,10 @@ class Model(object):
             initial_learning_rate,
             num_epoch,
             steps_per_checkpoint,
-            target_vocab_size, 
-            model_dir, 
+            target_vocab_size,
+            model_dir,
             target_embedding_size,
-            attn_num_hidden, 
+            attn_num_hidden,
             attn_num_layers,
             clip_gradients,
             max_gradient_norm,
@@ -49,7 +49,7 @@ class Model(object):
             evaluate=False,
             valid_target_length=float('inf'),
             reg_val = 0 ):
-            
+
         gpu_device_id = '/gpu:' + str(gpu_id)
         if not os.path.exists(model_dir):
             os.makedirs(model_dir)
@@ -92,7 +92,7 @@ class Model(object):
         # variables
         self.img_data = tf.placeholder(tf.float32, shape=(None, 1, 32, None), name='img_data')
         self.zero_paddings = tf.placeholder(tf.float32, shape=(None, None, 512), name='zero_paddings')
-        
+
         self.decoder_inputs = []
         self.encoder_masks = []
         self.target_weights = []
@@ -104,11 +104,11 @@ class Model(object):
                                                     name="decoder{0}".format(i)))
             self.target_weights.append(tf.placeholder(tf.float32, shape=[None],
                                                     name="weight{0}".format(i)))
-      
+
         self.reg_val = reg_val
         self.sess = session
         self.evaluate = evaluate
-        self.steps_per_checkpoint = steps_per_checkpoint 
+        self.steps_per_checkpoint = steps_per_checkpoint
         self.model_dir = model_dir
         self.output_dir = output_dir
         self.buckets = buckets
@@ -120,7 +120,7 @@ class Model(object):
         self.visualize = visualize
         self.learning_rate = initial_learning_rate
         self.clip_gradients = clip_gradients
-       
+
         if phase == 'train':
             self.forward_only = False
         elif phase == 'test':
@@ -138,10 +138,10 @@ class Model(object):
         with tf.device(gpu_device_id):
             self.attention_decoder_model = Seq2SeqModel(
                 encoder_masks = self.encoder_masks,
-                encoder_inputs_tensor = self.perm_conv_output, 
+                encoder_inputs_tensor = self.perm_conv_output,
                 decoder_inputs = self.decoder_inputs,
                 target_weights = self.target_weights,
-                target_vocab_size = target_vocab_size, 
+                target_vocab_size = target_vocab_size,
                 buckets = buckets,
                 target_embedding_size = target_embedding_size,
                 attn_num_layers = attn_num_layers,
@@ -231,7 +231,7 @@ class Model(object):
                 encoder_masks = batch['encoder_mask']
                 file_list = batch['filenames']
                 real_len = batch['real_len']
-               
+
                 grounds = [a for a in np.array([decoder_input.tolist() for decoder_input in decoder_inputs]).transpose()]
                 _, step_loss, step_logits, step_attns = self.step(encoder_masks, img_data, zero_paddings, decoder_inputs, target_weights, bucket_id, self.forward_only)
                 curr_step_time = (time.time() - start_time)
@@ -281,7 +281,7 @@ class Model(object):
                 for epoch in range(self.num_epoch):
 
                    logging.info('Generating first batch)')
-                   for i,batch in enumerate(self.s_gen.gen(self.batch_size)):
+                   for i, batch in enumerate(self.s_gen.gen(self.batch_size)):
                         # Get a batch and make a step.
                         num_total = 0
                         num_correct = 0
@@ -373,7 +373,7 @@ class Model(object):
         if len(target_weights) != decoder_size:
             raise ValueError("Weights length must be equal to the one in bucket,"
                     " %d != %d." % (len(target_weights), decoder_size))
-        
+
         # Input feed: encoder inputs, decoder inputs, target_weights, as provided.
         input_feed = {}
         input_feed[self.img_data.name] = img_data
@@ -386,11 +386,11 @@ class Model(object):
                 input_feed[self.encoder_masks[l].name] = encoder_masks[l]
             except Exception as e:
                 ipdb.set_trace()
-    
+
         # Since our targets are decoder inputs shifted by one, we need one more.
         last_target = self.decoder_inputs[decoder_size].name
         input_feed[last_target] = np.zeros([self.batch_size], dtype=np.int32)
-    
+
         # Output feed: depends on whether we do a backward step or not.
         if not forward_only:
             output_feed  = [self.updates[bucket_id],  # Update Op that does SGD.
@@ -405,7 +405,7 @@ class Model(object):
                 output_feed.append(self.attention_decoder_model.outputs[bucket_id][l])
             if self.visualize:
                 output_feed += self.attention_decoder_model.attention_weights_histories[bucket_id]
-    
+
         outputs = self.sess.run(output_feed, input_feed)
         if not forward_only:
             return outputs[2], outputs[1], outputs[3:(3+self.buckets[bucket_id][1])], None  # Gradient norm summary, loss, no outputs, no attentions.
@@ -428,15 +428,19 @@ class Model(object):
                 img = Image.open(img_file)
                 w, h = img.size
                 h = 32
-                img = img.resize(
-                        (real_len, h),
-                        Image.ANTIALIAS)
-                img_data = np.asarray(img, dtype=np.uint8)
+                img = img.resize((real_len, h), Image.ANTIALIAS)
+                if img.mode == '1':
+                    img_data = np.asarray(img, dtype=bool)*np.iinfo(np.uint8).max
+                    img_data = img_data.astype(np.uint8)
+                else:
+                    img_data = np.asarray(img, dtype=np.uint8)
                 for idx in range(len(output_valid)):
                     output_filename = os.path.join(output_dir, 'image_%d.jpg'%(idx))
                     attention = attentions[idx][:(int(real_len/4)-1)]
 
-                    # I have got the attention_orig here, which is of size 32*len(ground_truth), the only thing left is to visualize it and save it to output_filename
+                    # I have got the attention_orig here, which is of size
+                    # 32*len(ground_truth), the only thing left is to visualize
+                    # it and save it to output_filename
                     # TODO here
                     attention_orig = np.zeros(real_len)
                     for i in range(real_len):
