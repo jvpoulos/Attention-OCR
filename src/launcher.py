@@ -22,7 +22,7 @@ def process_args(args, defaults):
     parser.add_argument('--phase', dest="phase",
                         type=str, default=defaults.PHASE,
                         choices=['train', 'test'],
-                        help=('Phase of experiment, can be either' 
+                        help=('Phase of experiment, can be either'
                             ' train or test, default=%s'%(defaults.PHASE)))
     parser.add_argument('--data-path', dest="data_path",
                         type=str, default=defaults.DATA_PATH,
@@ -58,7 +58,7 @@ def process_args(args, defaults):
                             %(defaults.STEPS_PER_CHECKPOINT)))
     parser.add_argument('--target-vocab-size', dest="target_vocab_size",
                         type=int, default=defaults.TARGET_VOCAB_SIZE,
-                        help=('Target vocabulary size, default=%s' 
+                        help=('Target vocabulary size, default=%s'
                             %(defaults.TARGET_VOCAB_SIZE)))
     parser.add_argument('--model-dir', dest="model_dir",
                         type=str, default=defaults.MODEL_DIR,
@@ -67,17 +67,17 @@ def process_args(args, defaults):
                             'default=%s' %(defaults.MODEL_DIR)))
     parser.add_argument('--target-embedding-size', dest="target_embedding_size",
                         type=int, default=defaults.TARGET_EMBEDDING_SIZE,
-                        help=('Embedding dimension for each target, default=%s' 
+                        help=('Embedding dimension for each target, default=%s'
                             %(defaults.TARGET_EMBEDDING_SIZE)))
     parser.add_argument('--attn-num-hidden', dest="attn_num_hidden",
                         type=int, default=defaults.ATTN_NUM_HIDDEN,
                         help=('number of hidden units in attention decoder cell'
-                            ', default=%s' 
+                            ', default=%s'
                             %(defaults.ATTN_NUM_HIDDEN)))
     parser.add_argument('--attn-num-layers', dest="attn_num_layers",
                         type=int, default=defaults.ATTN_NUM_LAYERS,
                         help=('number of hidden layers in attention decoder cell'
-                            ', default=%s' 
+                            ', default=%s'
                             %(defaults.ATTN_NUM_LAYERS)))
     parser.add_argument('--load-model', dest='load_model', action='store_true',
                         help=('Load model from model-dir or not'
@@ -86,11 +86,11 @@ def process_args(args, defaults):
     parser.set_defaults(load_model=defaults.LOAD_MODEL)
     parser.add_argument('--log-path', dest="log_path",
                         type=str, default=defaults.LOG_PATH,
-                        help=('Log file path, default=%s' 
+                        help=('Log file path, default=%s'
                             %(defaults.LOG_PATH)))
     parser.add_argument('--output-dir', dest="output_dir",
                         type=str, default=defaults.OUTPUT_DIR,
-                        help=('Output directory, default=%s' 
+                        help=('Output directory, default=%s'
                             %(defaults.OUTPUT_DIR)))
     parser.add_argument('--max_gradient_norm', dest="max_gradient_norm",
                         type=int, default=defaults.MAX_GRADIENT_NORM,
@@ -100,6 +100,12 @@ def process_args(args, defaults):
     parser.add_argument('--no-gradient_clipping', dest='clip_gradients', action='store_false',
                         help=('Do not perform gradient clipping, difault for clip_gradients is %s' %
                               (defaults.CLIP_GRADIENTS)))
+
+    parser.add_argument('--augmentation', dest='augmentation',
+                        help=('P(image augmentation).'
+                              ', default=%s'
+                              % (defaults.AUGMENTATION)))
+    parser.set_defaults(augmentation=defaults.AUGMENTATION)
     parser.set_defaults(clip_gradients=defaults.CLIP_GRADIENTS)
 
     parameters = parser.parse_args(args)
@@ -128,7 +134,7 @@ def main(args, defaults):
                 initial_learning_rate = parameters.initial_learning_rate,
                 num_epoch = parameters.num_epoch,
                 steps_per_checkpoint = parameters.steps_per_checkpoint,
-                target_vocab_size = parameters.target_vocab_size, 
+                target_vocab_size = parameters.target_vocab_size,
                 model_dir = parameters.model_dir,
                 target_embedding_size = parameters.target_embedding_size,
                 attn_num_hidden = parameters.attn_num_hidden,
@@ -139,7 +145,8 @@ def main(args, defaults):
                 valid_target_length = float('inf'),
                 gpu_id=parameters.gpu_id,
                 use_gru=parameters.use_gru,
-                session = sess)
+                session = sess,
+                augmentation=parameters.augmentation)
         model.launch()
 
 if __name__ == "__main__":
