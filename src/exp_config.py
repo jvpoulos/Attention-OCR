@@ -6,19 +6,20 @@ Default paramters for experiemnt
 
 
 class ExpConfig:
-    
+
     GPU_ID = 0
-    # phase 
+    # phase
     PHASE = 'test'
     VISUALIZE = True
 
     # input and output
     DATA_BASE_DIR = '/mnt/90kDICT32px'
-    DATA_PATH = '/mnt/train_shuffled_words.txt' # path containing data file names and labels. Format: 
+    DATA_PATH = '/mnt/train_shuffled_words.txt' # path containing data file names and labels. Format:
     MODEL_DIR = 'train' # the directory for saving and loading model parameters (structure is not stored)
     LOG_PATH = 'log.txt'
     OUTPUT_DIR = 'results' # output directory
     STEPS_PER_CHECKPOINT = 500 # checkpointing (print perplexity, save model) per how many steps
+    AUGMENTATION = 0.1 # P(data augmentation)
 
     # Optimization
     NUM_EPOCH = 1000
@@ -36,3 +37,4 @@ class ExpConfig:
     LOAD_MODEL = False
     OLD_MODEL_VERSION = False
     TARGET_VOCAB_SIZE = 26+10+3 # 0: PADDING, 1: GO, 2: EOS, >2: 0-9, a-z
+
