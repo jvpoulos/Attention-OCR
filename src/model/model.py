@@ -17,6 +17,8 @@ from .seq2seq_model import Seq2SeqModel
 from data_util.data_gen import DataGen
 from tqdm import tqdm
 
+from imgaug import augmenters as iaa
+
 try:
     import distance
     distance_loaded = True
@@ -26,29 +28,30 @@ except ImportError:
 class Model(object):
 
     def __init__(self,
-            phase,
-            visualize,
-            data_path,
-            data_base_dir,
-            output_dir,
-            batch_size,
-            initial_learning_rate,
-            num_epoch,
-            steps_per_checkpoint,
-            target_vocab_size,
-            model_dir,
-            target_embedding_size,
-            attn_num_hidden,
-            attn_num_layers,
-            clip_gradients,
-            max_gradient_norm,
-            session,
-            load_model,
-            gpu_id,
-            use_gru,
-            evaluate=False,
-            valid_target_length=float('inf'),
-            reg_val = 0 ):
+                 phase,
+                 visualize,
+                 data_path,
+                 data_base_dir,
+                 output_dir,
+                 batch_size,
+                 initial_learning_rate,
+                 num_epoch,
+                 steps_per_checkpoint,
+                 target_vocab_size,
+                 model_dir,
+                 target_embedding_size,
+                 attn_num_hidden,
+                 attn_num_layers,
+                 clip_gradients,
+                 max_gradient_norm,
+                 session,
+                 load_model,
+                 gpu_id,
+                 use_gru,
+                 evaluate=False,
+                 valid_target_length=float('inf'),
+                 reg_val = 0,
+                 augmentation=0.1):
 
         gpu_device_id = '/gpu:' + str(gpu_id)
         if not os.path.exists(model_dir):
@@ -82,6 +85,7 @@ class Model(object):
         logging.info('attn_num_hidden: %d' % attn_num_hidden)
         logging.info('attn_num_layers: %d' % attn_num_layers)
         logging.info('visualize: %s' % visualize)
+        logging.info('P(data augmentation): %s' % augmentation)
 
         buckets = self.s_gen.bucket_specs
         logging.info('buckets')
@@ -120,6 +124,7 @@ class Model(object):
         self.visualize = visualize
         self.learning_rate = initial_learning_rate
         self.clip_gradients = clip_gradients
+        self.augmentation = augmentation
 
         if phase == 'train':
             self.forward_only = False
@@ -278,6 +283,14 @@ class Model(object):
         elif self.phase == 'train':
             total = (self.s_gen.get_size() // self.batch_size)
             with tqdm(desc='Train: ', total=total) as pbar:
+                st = lambda aug: iaa.Sometimes(self.augmentation, aug)
+                seq = iaa.Sequential([
+                    st(iaa.Affine(scale={"x": (0.8, 1.2), "y": (0.8, 1.2)}, # scale images to 80-120% of their size, individually per axis
+                                  translate_px={"x": (-16, 16), "y": (-16, 16)}, # translate by -16 to +16 pixels (per axis)
+                                  rotate=(-45, 45), # rotate by -45 to +45 degrees
+                                  shear=(-16, 16), # shear by -16 to +16 degrees
+                    ))
+                ])
                 for epoch in range(self.num_epoch):
 
                    logging.info('Generating first batch)')
@@ -289,6 +302,9 @@ class Model(object):
                         batch_len = batch['real_len']
                         bucket_id = batch['bucket_id']
                         img_data = batch['data']
+                        img_data = seq.augment_images(
+                            img_data.transpose(0, 2, 3, 1))
+                        img_data = img_data.transpose(0, 3, 1, 2)
                         zero_paddings = batch['zero_paddings']
                         decoder_inputs = batch['decoder_inputs']
                         target_weights = batch['target_weights']
@@ -296,7 +312,10 @@ class Model(object):
                         #logging.info('current_step: %d'%current_step)
                         #logging.info(np.array([decoder_input.tolist() for decoder_input in decoder_inputs]).transpose()[0])
                         #print (np.array([target_weight.tolist() for target_weight in target_weights]).transpose()[0])
-                        summaries, step_loss, step_logits, _ = self.step(encoder_masks, img_data, zero_paddings, decoder_inputs, target_weights, bucket_id, self.forward_only)
+                        summaries, step_loss, step_logits, _ = self.step(
+                            encoder_masks, img_data, zero_paddings,
+                            decoder_inputs, target_weights, bucket_id,
+                            self.forward_only)
 
                         grounds = [a for a in
                                    np.array([decoder_input.tolist() for decoder_input in decoder_inputs]).transpose()]
