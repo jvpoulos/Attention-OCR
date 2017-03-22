@@ -7,12 +7,14 @@ python3 src/launcher.py \
 --data-base-dir=gwdb \
 --model-dir=model_gwdb \
 --log-path=log_gwdb_words_train.txt \
---no-load-model \
 --batch-size=8 \
+--num-epoch=100 \
 --gpu-id=0 \
---use-gru
+--use-gru \
+--load-model
 
-# Lines - use model weights from words
+
+# Lines
 python3 src/launcher.py \
 --phase=train \
 --data-path=gwdb/transcription_train.txt \
@@ -20,5 +22,8 @@ python3 src/launcher.py \
 --model-dir=model_gwdb \
 --log-path=log_gwdb_lines.txt \
 --batch-size=8 \
+--num-epoch=100 \
 --gpu-id=0 \
---use-gru
+--use-gru \
+--augmentation=0.5 \
+--load-model
