@@ -124,7 +124,7 @@ class Model(object):
         self.visualize = visualize
         self.learning_rate = initial_learning_rate
         self.clip_gradients = clip_gradients
-        self.augmentation = int(augmentation)
+        self.augmentation = augmentation
 
         if phase == 'train':
             self.forward_only = False
