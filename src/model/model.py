@@ -50,7 +50,7 @@ class Model(object):
                  use_gru,
                  evaluate=False,
                  valid_target_length=float('inf'),
-                 reg_val = 0.0001,
+                 reg_val = 0,
                  augmentation=0.1):
 
         gpu_device_id = '/gpu:' + str(gpu_id)
