@@ -535,7 +535,6 @@
 ./word_images_normalized/307-14-10.png court
 ./word_images_normalized/307-14-11.png mar
 ./word_images_normalized/307-15-01.png tial
-./word_images_normalized/307-15-02.png 
 ./word_images_normalized/307-15-03.png you
 ./word_images_normalized/307-15-04.png are
 ./word_images_normalized/307-15-05.png to
