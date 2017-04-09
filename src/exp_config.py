@@ -19,7 +19,6 @@ class ExpConfig:
     LOG_PATH = 'log.txt'
     OUTPUT_DIR = 'results' # output directory
     STEPS_PER_CHECKPOINT = 500 # checkpointing (print perplexity, save model) per how many steps
-    AUGMENTATION = 0.1 # P(data augmentation)
 
     # Optimization
     NUM_EPOCH = 1000

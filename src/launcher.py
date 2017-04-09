@@ -100,12 +100,6 @@ def process_args(args, defaults):
     parser.add_argument('--no-gradient_clipping', dest='clip_gradients', action='store_false',
                         help=('Do not perform gradient clipping, difault for clip_gradients is %s' %
                               (defaults.CLIP_GRADIENTS)))
-
-    parser.add_argument('--augmentation', dest='augmentation',
-                        help=('P(image augmentation).'
-                              ', default=%s'
-                              % (defaults.AUGMENTATION)))
-    parser.set_defaults(augmentation=defaults.AUGMENTATION)
     parser.set_defaults(clip_gradients=defaults.CLIP_GRADIENTS)
 
     parameters = parser.parse_args(args)
@@ -145,8 +139,7 @@ def main(args, defaults):
                 valid_target_length = float('inf'),
                 gpu_id=parameters.gpu_id,
                 use_gru=parameters.use_gru,
-                session = sess,
-                augmentation=parameters.augmentation)
+                session = sess)
         model.launch()
 
 if __name__ == "__main__":
