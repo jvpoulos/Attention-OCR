@@ -8,6 +8,10 @@ import _pickle as cPickle
 import random, math
 from data_util.bucketdata import BucketData
 
+def set_trace():
+    from IPython.core.debugger import Pdb
+    import sys
+    Pdb(color_scheme='Linux').set_trace(sys._getframe().f_back)
 
 
 class DataGen(object):
@@ -19,7 +23,7 @@ class DataGen(object):
                  evaluate = False,
                  valid_target_len = float('inf'),
                  img_width_range = (12, 320),
-                 word_len = 64): #sgdb lines
+                 word_len = 95): # iam max
         """
         :param data_root:
         :param annotation_fn:
@@ -115,12 +119,34 @@ class DataGen(object):
             img_bw = np.asarray(img_bw, dtype=np.uint8)
             img_bw = img_bw[np.newaxis, :]
 
-        # 'a':97, '0':48
+        # 'a':97, 'z':122
+        # '_':95
+        # 'A':65, 'Z':90
+        #"?":63
+        # '<':60, '>':62
+        #";":59
+        #":":58
+        # '0':48, '9':57
+        #"/":47
+        # '.':46
+        #'-':45
+        #',':44
+        #"+":43
+        #"*":42
+        #"(":40, "(":41
+        #"'":39
+        #"&":38
+        #"!":33
+
+        # 0: PADDING, 1: GO, 2: EOS, 3: UNK
+
         word = [self.GO]
         for c in lex:
-            assert 96 < ord(c) < 123 or 47 < ord(c) < 58
+            # assert 96 < ord(c) < 123 or ord(c)==95 or 64 < ord(c) < 91 or ord==63 or ord==62 or ord==60  or ord==59 or ord==58 or 47 < ord(c) < 58 or 37 <ord(c) <48 or ord(c)==33
+            assert 32 < ord(c) < 123
             word.append(
-                ord(c) - 97 + 13 if ord(c) > 96 else ord(c) - 48 + 3)
+                ord(c)+3-33
+            )
         word.append(self.EOS)
         word = np.array(word, dtype=np.int32)
         # word = np.array( [self.GO] +

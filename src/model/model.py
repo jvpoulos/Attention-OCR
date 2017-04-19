@@ -424,8 +424,8 @@ class Model(object):
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
         with open(os.path.join(output_dir, 'word.txt'), 'w') as fword:
-            fword.write(' '.join([chr(c-13+97) if c-13+97>96 else chr(c-3+48) for c in ground_valid])+'\n')
-            fword.write(' '.join([chr(c-13+97) if c-13+97>96 else chr(c-3+48) for c in output_valid]))
+            fword.write(' '.join([chr(c-3+33) for c in ground_valid])+'\n')
+            fword.write(' '.join([chr(c-3+33) for c in output_valid]))
             with open(filename, 'rb') as img_file:
                 img = Image.open(img_file)
                 w, h = img.size
