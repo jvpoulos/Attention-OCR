@@ -9,7 +9,6 @@ import numpy as np
 from six.moves import xrange  # pylint: disable=redefined-builtin
 from PIL import Image
 import tensorflow as tf
-import keras.backend as K
 from . import data_utils
 
 from .cnn import CNN
