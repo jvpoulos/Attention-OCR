@@ -102,17 +102,8 @@ class Seq2SeqModel(object):
 
             num_hidden = attn_num_layers * attn_num_hidden
             lstm_fw_cell = tf.contrib.rnn.BasicLSTMCell(num_hidden, forget_bias=0.0, state_is_tuple=False)
-
-            if attn_num_layers > 1:
-                lstm_fw_cell = tf.contrib.rnn.DropoutWrapper(lstm_fw_cell, input_keep_prob=0.5) # add dropout for multilayer encoder
-                lstm_fw_cell = tf.contrib.rnn.MultiRNNCell([lstm_fw_cell] * attn_num_layers, state_is_tuple=False)
-
             # Backward direction cell
             lstm_bw_cell = tf.contrib.rnn.BasicLSTMCell(num_hidden, forget_bias=0.0, state_is_tuple=False)
-
-            if attn_num_layers > 1:
-                lstm_bw_cell = tf.contrib.rnn.DropoutWrapper(lstm_bw_cell, input_keep_prob=0.5) # add dropout for multilayer encoder
-                lstm_bw_cell = tf.contrib.rnn.MultiRNNCell([lstm_bw_cell] * attn_num_layers, state_is_tuple=False)
 
             pre_encoder_inputs, output_state = bidirectional_rnn(lstm_fw_cell, lstm_bw_cell, lstm_inputs,
                 initial_state_fw=None, initial_state_bw=None,

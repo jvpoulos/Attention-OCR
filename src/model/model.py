@@ -48,7 +48,7 @@ class Model(object):
                  use_gru,
                  evaluate=False,
                  valid_target_length=float('inf'),
-                 reg_val = 0.001):
+                 reg_val = 0):
 
         gpu_device_id = '/gpu:' + str(gpu_id)
         if not os.path.exists(model_dir):
