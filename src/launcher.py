@@ -92,13 +92,23 @@ def process_args(args, defaults):
                         type=str, default=defaults.OUTPUT_DIR,
                         help=('Output directory, default=%s'
                             %(defaults.OUTPUT_DIR)))
-    parser.add_argument('--max_gradient_norm', dest="max_gradient_norm",
+    parser.add_argument('--reg-val', dest="reg_val",
+                        type=int, default=defaults.REG_VAL,
+                        help=('Use L2 regularization losses.'
+                              ', default=%s'
+                              % (defaults.REG_VAL)))
+    parser.add_argument('--max-gradient-norm', dest="max_gradient_norm",
                         type=int, default=defaults.MAX_GRADIENT_NORM,
                         help=('Clip gradients to this norm.'
                               ', default=%s'
                               % (defaults.MAX_GRADIENT_NORM)))
+    parser.add_argument('--softmax-attn', dest="softmax_attn",
+                        type=str, default=defaults.SOFTMAX_ATTN,
+                        help=('Use softmax attention mechanism in decoder.'
+                              ', default=%s'
+                              % (defaults.SOFTMAX_ATTN)))
     parser.add_argument('--no-gradient_clipping', dest='clip_gradients', action='store_false',
-                        help=('Do not perform gradient clipping, difault for clip_gradients is %s' %
+                        help=('Do not perform gradient clipping, default for clip_gradients is %s' %
                               (defaults.CLIP_GRADIENTS)))
     parser.set_defaults(clip_gradients=defaults.CLIP_GRADIENTS)
 
@@ -134,7 +144,9 @@ def main(args, defaults):
                 attn_num_hidden = parameters.attn_num_hidden,
                 attn_num_layers = parameters.attn_num_layers,
                 clip_gradients = parameters.clip_gradients,
+                reg_val = parameters.reg_val,
                 max_gradient_norm = parameters.max_gradient_norm,
+                softmax_attn = parameters.softmax_attn,
                 load_model = parameters.load_model,
                 valid_target_length = float('inf'),
                 gpu_id=parameters.gpu_id,

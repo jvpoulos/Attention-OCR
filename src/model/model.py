@@ -41,13 +41,14 @@ class Model(object):
                  attn_num_layers,
                  clip_gradients,
                  max_gradient_norm,
+                 softmax_attn,
                  session,
                  load_model,
                  gpu_id,
                  use_gru,
+                 reg_val,
                  evaluate=False,
-                 valid_target_length=float('inf'),
-                 reg_val = 0.001):
+                 valid_target_length=float('inf')):
 
         gpu_device_id = '/gpu:' + str(gpu_id)
         if not os.path.exists(model_dir):
@@ -72,8 +73,9 @@ class Model(object):
         logging.info('batch_size: %d' %(batch_size))
         logging.info('num_epoch: %d' %num_epoch)
         logging.info('learning_rate: %d' % initial_learning_rate)
-        logging.info('reg_val: %d' % (reg_val))
+        logging.info('reg_val: %d' % reg_val)
         logging.info('max_gradient_norm: %f' % max_gradient_norm)
+        logging.info('softmax_attn: %s' % softmax_attn)
         logging.info('clip_gradients: %s' % clip_gradients)
         logging.info('valid_target_length %f' %valid_target_length)
         logging.info('target_vocab_size: %d' %target_vocab_size)
