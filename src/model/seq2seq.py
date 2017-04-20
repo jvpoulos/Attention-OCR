@@ -434,7 +434,7 @@ def embedding_tied_rnn_seq2seq(encoder_inputs, decoder_inputs, cell,
 def attention_decoder(decoder_inputs, initial_state, attention_states, cell,
                       output_size=None, num_heads=1, loop_function=None,
                       dtype=dtypes.float32, scope=None,
-                      initial_state_attention=False, attn_num_hidden=128):
+                      initial_state_attention=False, attn_num_hidden=128,softmax_attn=True):
   """RNN decoder with attention for the sequence-to-sequence model.
 
   In this context "attention" means that, during decoding, the RNN can look up
@@ -465,6 +465,7 @@ def attention_decoder(decoder_inputs, initial_state, attention_states, cell,
       If True, initialize the attentions from the initial state and attention
       states -- useful when we wish to resume decoding from a previously
       stored decoder state and attention states.
+    softmax_attn: Attention mechanism is softmax (else sigmoid).
 
   Returns:
     A tuple of the form (outputs, state), where:
@@ -533,7 +534,10 @@ def attention_decoder(decoder_inputs, initial_state, attention_states, cell,
           # Attention mask is a softmax of v^T * tanh(...).
           s = math_ops.reduce_sum(
               v[a] * math_ops.tanh(hidden_features[a] + y), [2, 3])
-          a = nn_ops.softmax(s)
+          if softmax_attn is not True:
+            a = tf.sigmoid(s)
+          else:
+            a = nn_ops.softmax(s)
           ss = a
           #a = tf.Print(a, [a], message="a: ",summarize=30)
           # Now calculate the attention-weighted vector d.
