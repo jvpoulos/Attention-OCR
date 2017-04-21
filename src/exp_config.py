@@ -30,7 +30,7 @@ class ExpConfig:
     CLIP_GRADIENTS = True # whether to perform gradient clipping
     MAX_GRADIENT_NORM = 5.0 # Clip gradients to this norm
     TARGET_EMBEDDING_SIZE = 10 # embedding dimension for each target
-    SOFTMAX_ATTN = True # attention mechanism in decoder is softmax (else, sigmoid)
+    OPT_ATTN = 'softmax' # which attention mechanism to use: 'softmax' (default); 'sigmoid'; 'crf_binary'; 'crf_unary'
     ATTN_USE_LSTM = True # whether or not use LSTM attention decoder cell
     ATTN_NUM_HIDDEN=128 # number of hidden units in attention decoder cell
     ATTN_NUM_LAYERS = 2 # number of layers in attention decoder cell

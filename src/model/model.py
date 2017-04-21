@@ -41,7 +41,7 @@ class Model(object):
                  attn_num_layers,
                  clip_gradients,
                  max_gradient_norm,
-                 softmax_attn,
+                 opt_attn,
                  session,
                  load_model,
                  gpu_id,
@@ -75,7 +75,7 @@ class Model(object):
         logging.info('learning_rate: %d' % initial_learning_rate)
         logging.info('reg_val: %d' % reg_val)
         logging.info('max_gradient_norm: %f' % max_gradient_norm)
-        logging.info('softmax_attn: %s' % softmax_attn)
+        logging.info('opt_attn: %s' % opt_attn)
         logging.info('clip_gradients: %s' % clip_gradients)
         logging.info('valid_target_length %f' %valid_target_length)
         logging.info('target_vocab_size: %d' %target_vocab_size)

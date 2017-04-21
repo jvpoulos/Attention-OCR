@@ -102,11 +102,11 @@ def process_args(args, defaults):
                         help=('Clip gradients to this norm.'
                               ', default=%s'
                               % (defaults.MAX_GRADIENT_NORM)))
-    parser.add_argument('--softmax-attn', dest="softmax_attn",
-                        type=str, default=defaults.SOFTMAX_ATTN,
-                        help=('Use softmax attention mechanism in decoder.'
-                              ', default=%s'
-                              % (defaults.SOFTMAX_ATTN)))
+    parser.add_argument('--opt-attn', dest="opt_attn",
+                        type=str, default=defaults.OPT_ATTN,
+                        choices=['softmax', 'sigmoid', 'crf_binary','crf_unary'],
+                        help=('Attention mechanism used for decoder, default=%s'%(defaults.PHASE)))
+    parser.set_defaults(opt_attn=defaults.OPT_ATTN)
     parser.add_argument('--no-gradient_clipping', dest='clip_gradients', action='store_false',
                         help=('Do not perform gradient clipping, default for clip_gradients is %s' %
                               (defaults.CLIP_GRADIENTS)))
@@ -146,7 +146,7 @@ def main(args, defaults):
                 clip_gradients = parameters.clip_gradients,
                 reg_val = parameters.reg_val,
                 max_gradient_norm = parameters.max_gradient_norm,
-                softmax_attn = parameters.softmax_attn,
+                opt_attn = parameters.opt_attn,
                 load_model = parameters.load_model,
                 valid_target_length = float('inf'),
                 gpu_id=parameters.gpu_id,

@@ -69,6 +69,7 @@ from tensorflow.python.ops import embedding_ops
 from tensorflow.python.ops import math_ops
 from tensorflow.python.ops import nn_ops
 from tensorflow.python.ops import rnn
+from tensorflow.contrib import crf
 from tensorflow.contrib.rnn.python.ops import rnn_cell
 from tensorflow.python.ops import variable_scope
 linear = rnn_cell._linear # pylint: disable=protected-access
@@ -434,7 +435,7 @@ def embedding_tied_rnn_seq2seq(encoder_inputs, decoder_inputs, cell,
 def attention_decoder(decoder_inputs, initial_state, attention_states, cell,
                       output_size=None, num_heads=1, loop_function=None,
                       dtype=dtypes.float32, scope=None,
-                      initial_state_attention=False, attn_num_hidden=128,softmax_attn=True):
+                      initial_state_attention=False, attn_num_hidden=128,opt_attn='softmax'):
   """RNN decoder with attention for the sequence-to-sequence model.
 
   In this context "attention" means that, during decoding, the RNN can look up
@@ -465,7 +466,7 @@ def attention_decoder(decoder_inputs, initial_state, attention_states, cell,
       If True, initialize the attentions from the initial state and attention
       states -- useful when we wish to resume decoding from a previously
       stored decoder state and attention states.
-    softmax_attn: Attention mechanism is softmax (else sigmoid).
+    opt_attn=: which attention mechanism to use: 'softmax' (default); 'sigmoid'; 'crf_binary'; 'crf_unary'
 
   Returns:
     A tuple of the form (outputs, state), where:
@@ -534,8 +535,12 @@ def attention_decoder(decoder_inputs, initial_state, attention_states, cell,
           # Attention mask is a softmax of v^T * tanh(...).
           s = math_ops.reduce_sum(
               v[a] * math_ops.tanh(hidden_features[a] + y), [2, 3])
-          if softmax_attn is not True:
+          if opt_attn is 'sigmoid':
             a = tf.sigmoid(s)
+          if opt_attn is 'crf_binary': 
+            a = crf.crf_binary_score(s)
+          if opt_attn is 'crf_unary': 
+            a = crf.crf_unary_score(s)
           else:
             a = nn_ops.softmax(s)
           ss = a
