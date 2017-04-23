@@ -466,7 +466,7 @@ def attention_decoder(decoder_inputs, initial_state, attention_states, cell,
       If True, initialize the attentions from the initial state and attention
       states -- useful when we wish to resume decoding from a previously
       stored decoder state and attention states.
-    opt_attn=: which attention mechanism to use: 'softmax' (default); 'sigmoid'; 'crf_binary'; 'crf_unary'
+    opt_attn=: which attention mechanism to use: 'softmax' (default); 'sigmoid'; 'crf_binary'; 'crf_unary', 'no_attn'
 
   Returns:
     A tuple of the form (outputs, state), where:
@@ -541,10 +541,10 @@ def attention_decoder(decoder_inputs, initial_state, attention_states, cell,
             a = crf.crf_binary_score(s)
           if opt_attn is 'crf_unary': 
             a = crf.crf_unary_score(s)
-          else:
+          if opt_attn is 'softmax':
             a = nn_ops.softmax(s)
           ss = a
-          #a = tf.Print(a, [a], message="a: ",summarize=30)
+        #  a = tf.Print(a, [a], message="a: ",summarize=30)
           # Now calculate the attention-weighted vector d.
           d = math_ops.reduce_sum(
               array_ops.reshape(a, [-1, attn_length, 1, 1]) * hidden,
