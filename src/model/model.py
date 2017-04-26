@@ -11,6 +11,8 @@ from PIL import Image
 import tensorflow as tf
 from . import data_utils
 
+from data_utils import plot_attention_matrix
+
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pylab as plt
