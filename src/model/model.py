@@ -431,8 +431,8 @@ class Model(object):
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
         with open(os.path.join(output_dir, 'word.txt'), 'w') as fword:
-            gt = ' '.join([chr(c-3+33) for c in ground_valid])
-            ot = ' '.join([chr(c-3+33) for c in output_valid])
+            gt = ''.join([chr(c-3+33) for c in ground_valid])
+            ot = ''.join([chr(c-3+33) for c in output_valid])
             fword.write(gt+'\n')
             fword.write(ot)
             with open(filename, 'rb') as img_file:
@@ -470,6 +470,6 @@ class Model(object):
                     #print (output_filename)
                 data_utils.plot_attention_matrix(
                     attentions[:len(output_valid), :min((int(real_len/4)-1), len(ground_valid))],
-                    ot.replace(' ', ''), gt.replace(' ', ''),
+                    ot.replace('_', ''), gt.replace('_', ''),
                     os.path.join(output_dir, 'att_mat'))
                 #assert False
