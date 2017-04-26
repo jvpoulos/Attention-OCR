@@ -471,5 +471,5 @@ class Model(object):
                 data_utils.plot_attention_matrix(
                     attentions[:len(output_valid), :min((int(real_len/4)-1), len(ground_valid))],
                     ot.replace(' ', ''), gt.replace(' ', ''),
-                    os.path.join(output_dir, 'att_mat')
+                    os.path.join(output_dir, 'att_mat'))
                 #assert False
