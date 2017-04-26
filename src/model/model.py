@@ -11,8 +11,6 @@ from PIL import Image
 import tensorflow as tf
 from . import data_utils
 
-from data_utils import plot_attention_matrix
-
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pylab as plt
@@ -468,7 +466,7 @@ class Model(object):
                     img_out = Image.fromarray(img_out_data.astype(np.uint8))
                     img_out.save(output_filename)
                     #print (output_filename)
-                self.plot_attention_matrix(
+                data_utils.plot_attention_matrix(
                     attentions[:len(output_valid), :min((int(real_len/4)-1), len(ground_valid))],
                     ot.replace(' ', ''), gt.replace(' ', ''),
                     output_filename)
