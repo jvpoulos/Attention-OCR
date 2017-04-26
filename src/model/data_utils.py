@@ -23,6 +23,9 @@ import os
 import re
 import tarfile
 
+import numpy as np
+import itertools
+
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pylab as plt
