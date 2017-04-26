@@ -535,13 +535,10 @@ def attention_decoder(decoder_inputs, initial_state, attention_states, cell,
           s = math_ops.reduce_sum(v[a] * math_ops.tanh(hidden_features[a] + y), [2, 3]) # theta_ij
           if opt_attn=='no_attn':
             a = s
-            a = tf.Print(a, [a], message="no_attn: ",summarize=30) 
           elif opt_attn=='sigmoid':
             a = tf.sigmoid(s)
-            a = tf.Print(a, [a], message="sigmoid: ",summarize=30)
           elif opt_attn=='softmax':
             a = nn_ops.softmax(s)
-            a = tf.Print(a, [a], message="softmax: ",summarize=30)
           ss = a
         #  a = tf.Print(a, [a], message="a: ",summarize=30)
           # Now calculate the attention-weighted vector d.
