@@ -69,7 +69,6 @@ from tensorflow.python.ops import embedding_ops
 from tensorflow.python.ops import math_ops
 from tensorflow.python.ops import nn_ops
 from tensorflow.python.ops import rnn
-from tensorflow.contrib import crf
 from tensorflow.contrib.rnn.python.ops import rnn_cell
 from tensorflow.python.ops import variable_scope
 linear = rnn_cell._linear # pylint: disable=protected-access
@@ -466,7 +465,7 @@ def attention_decoder(decoder_inputs, initial_state, attention_states, cell,
       If True, initialize the attentions from the initial state and attention
       states -- useful when we wish to resume decoding from a previously
       stored decoder state and attention states.
-    opt_attn=: which attention mechanism to use: 'softmax' (default); 'sigmoid'; 'crf_binary'; 'crf_unary', 'no_attn'
+    opt_attn=: which attention mechanism to use: 'softmax' (default); 'sigmoid'; no_attn'
 
   Returns:
     A tuple of the form (outputs, state), where:
@@ -533,16 +532,16 @@ def attention_decoder(decoder_inputs, initial_state, attention_states, cell,
           y = linear(query, attention_vec_size, True)
           y = array_ops.reshape(y, [-1, 1, 1, attention_vec_size])
           # Attention mask is a softmax of v^T * tanh(...).
-          s = math_ops.reduce_sum(
-              v[a] * math_ops.tanh(hidden_features[a] + y), [2, 3])
-          if opt_attn is 'sigmoid':
+          s = math_ops.reduce_sum(v[a] * math_ops.tanh(hidden_features[a] + y), [2, 3]) # theta_ij
+          if opt_attn=='no_attn':
+            a = s
+            a = tf.Print(a, [a], message="no_attn: ",summarize=30) 
+          elif opt_attn=='sigmoid':
             a = tf.sigmoid(s)
-          if opt_attn is 'crf_binary': 
-            a = crf.crf_binary_score(s)
-          if opt_attn is 'crf_unary': 
-            a = crf.crf_unary_score(s)
-          if opt_attn is 'softmax':
+            a = tf.Print(a, [a], message="sigmoid: ",summarize=30)
+          elif opt_attn=='softmax':
             a = nn_ops.softmax(s)
+            a = tf.Print(a, [a], message="softmax: ",summarize=30)
           ss = a
         #  a = tf.Print(a, [a], message="a: ",summarize=30)
           # Now calculate the attention-weighted vector d.
@@ -619,7 +618,8 @@ def embedding_attention_decoder(decoder_inputs, initial_state, attention_states,
                                 update_embedding_for_previous=True,
                                 dtype=dtypes.float32, scope=None,
                                 initial_state_attention=False,
-                                attn_num_hidden=128):
+                                attn_num_hidden=128,
+                                opt_attn='softmax'):
   """RNN decoder with embedding and attention and a pure-decoding option.
 
   Args:
@@ -682,7 +682,7 @@ def embedding_attention_decoder(decoder_inputs, initial_state, attention_states,
     return attention_decoder(
         emb_inp, initial_state, attention_states, cell, output_size=output_size,
         num_heads=num_heads, loop_function=loop_function,
-        initial_state_attention=initial_state_attention, attn_num_hidden=attn_num_hidden)
+        initial_state_attention=initial_state_attention, attn_num_hidden=attn_num_hidden,opt_attn=opt_attn)
 
 
 def embedding_attention_seq2seq(encoder_inputs, decoder_inputs, cell,
@@ -690,7 +690,8 @@ def embedding_attention_seq2seq(encoder_inputs, decoder_inputs, cell,
                                 embedding_size,
                                 num_heads=1, output_projection=None,
                                 feed_previous=False, dtype=dtypes.float32,
-                                scope=None, initial_state_attention=False):
+                                scope=None, initial_state_attention=False,
+                                opt_attn='softmax'):
   """Embedding sequence-to-sequence model with attention.
 
   This model first embeds encoder_inputs by a newly created embedding (of shape
@@ -757,7 +758,8 @@ def embedding_attention_seq2seq(encoder_inputs, decoder_inputs, cell,
           num_decoder_symbols, embedding_size, num_heads=num_heads,
           output_size=output_size, output_projection=output_projection,
           feed_previous=feed_previous,
-          initial_state_attention=initial_state_attention)
+          initial_state_attention=initial_state_attention,
+          opt_attn=opt_attn)
 
     # If feed_previous is a Tensor, we construct 2 graphs and use cond.
     def decoder(feed_previous_bool):
@@ -770,7 +772,8 @@ def embedding_attention_seq2seq(encoder_inputs, decoder_inputs, cell,
             output_size=output_size, output_projection=output_projection,
             feed_previous=feed_previous_bool,
             update_embedding_for_previous=False,
-            initial_state_attention=initial_state_attention)
+            initial_state_attention=initial_state_attention,
+            opt_attn=opt_attn)
         return outputs + [state]
 
     outputs_and_state = control_flow_ops.cond(feed_previous,

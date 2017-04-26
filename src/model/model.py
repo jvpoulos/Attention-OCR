@@ -148,7 +148,8 @@ class Model(object):
                 attn_num_layers = attn_num_layers,
                 attn_num_hidden = attn_num_hidden,
                 forward_only = self.forward_only,
-                use_gru = use_gru)
+                use_gru = use_gru,
+                opt_attn= opt_attn)
 
 
 
@@ -281,7 +282,7 @@ class Model(object):
             with tqdm(desc='Train: ', total=total) as pbar:
                 for epoch in range(self.num_epoch):
 
-                   logging.info('Generating first batch)')
+                   logging.info('Generating first batch')
                    for i, batch in enumerate(self.s_gen.gen(self.batch_size)):
                         # Get a batch and make a step.
                         num_total = 0

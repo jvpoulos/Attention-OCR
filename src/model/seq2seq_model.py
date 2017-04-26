@@ -59,7 +59,8 @@ class Seq2SeqModel(object):
             attn_num_layers,
             attn_num_hidden,
             forward_only,
-            use_gru):
+            use_gru,
+            opt_attn):
         """Create the model.
 
         Args:
@@ -123,7 +124,8 @@ class Seq2SeqModel(object):
                     output_projection=None,
                     feed_previous=do_decode,
                     initial_state_attention=False,
-                    attn_num_hidden = attn_num_hidden)
+                    attn_num_hidden = attn_num_hidden,
+                    opt_attn=opt_attn)
             return outputs, attention_weights_history
 
         # Our targets are decoder inputs shifted by one.

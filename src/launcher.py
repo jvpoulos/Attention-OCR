@@ -104,8 +104,9 @@ def process_args(args, defaults):
                               % (defaults.MAX_GRADIENT_NORM)))
     parser.add_argument('--opt-attn', dest="opt_attn",
                         type=str, default=defaults.OPT_ATTN,
-                        choices=['softmax', 'sigmoid', 'crf_binary','crf_unary'],
-                        help=('Attention mechanism used for decoder, default=%s'%(defaults.PHASE)))
+                        choices=['softmax', 'sigmoid', 'no_attn'],
+                        help=('Attention mechanism used for decoder, default=%s'
+                            %(defaults.OPT_ATTN)))
     parser.set_defaults(opt_attn=defaults.OPT_ATTN)
     parser.add_argument('--no-gradient_clipping', dest='clip_gradients', action='store_false',
                         help=('Do not perform gradient clipping, default for clip_gradients is %s' %

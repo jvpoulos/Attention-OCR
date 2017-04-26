@@ -26,11 +26,11 @@ class ExpConfig:
     INITIAL_LEARNING_RATE = 1.0 # initial learning rate, note the we use AdaDelta, so the initial value doe not matter much
 
     # Network parameters
-    REG_VAL = 0.001 # lambda for L2 regularization losses
+    REG_VAL = 0.005 # lambda for L2 regularization losses
     CLIP_GRADIENTS = True # whether to perform gradient clipping
     MAX_GRADIENT_NORM = 5.0 # Clip gradients to this norm
     TARGET_EMBEDDING_SIZE = 10 # embedding dimension for each target
-    OPT_ATTN = 'softmax' # which attention mechanism to use: 'softmax' (default); 'sigmoid'; 'crf_binary'; 'crf_unary'
+    OPT_ATTN = 'softmax' # which attention mechanism to use: 'softmax' (default); 'sigmoid'; 'no_attn'
     ATTN_USE_LSTM = True # whether or not use LSTM attention decoder cell
     ATTN_NUM_HIDDEN=128 # number of hidden units in attention decoder cell
     ATTN_NUM_LAYERS = 2 # number of layers in attention decoder cell
