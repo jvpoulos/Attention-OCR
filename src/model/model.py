@@ -11,6 +11,10 @@ from PIL import Image
 import tensorflow as tf
 from . import data_utils
 
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pylab as plt
+
 from .cnn import CNN
 from .seq2seq_model import Seq2SeqModel
 from data_util.data_gen import DataGen
@@ -462,4 +466,8 @@ class Model(object):
                     img_out = Image.fromarray(img_out_data.astype(np.uint8))
                     img_out.save(output_filename)
                     #print (output_filename)
+                self.plot_attention_matrix(
+                    attentions[:len(output_valid), :min((int(real_len/4)-1), len(ground_valid))],
+                    ot.replace(' ', ''), gt.replace(' ', ''),
+                    output_filename)
                 #assert False

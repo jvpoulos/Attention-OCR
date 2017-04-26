@@ -23,6 +23,10 @@ import os
 import re
 import tarfile
 
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pylab as plt
+
 from six.moves import urllib
 
 from tensorflow.python.platform import gfile
@@ -48,6 +52,30 @@ _DIGIT_RE = re.compile(br"\d")
 _WMT_ENFR_TRAIN_URL = "http://www.statmt.org/wmt10/training-giga-fren.tar"
 _WMT_ENFR_DEV_URL = "http://www.statmt.org/wmt15/dev-v2.tgz"
 
+def plot_attention_matrix(data, p_labels, t_labels, filepath,
+                          normalize=False):
+    """
+    This function prints and plots the confusion matrix.
+    Normalization can be applied by setting `normalize=True`.
+    """
+    plt.figure(figsize=(32, 32))
+    plt.imshow(data, interpolation='nearest')
+    # plt.colorbar()
+    plt.xticks(np.arange(len(t_labels)), t_labels, rotation=45)
+    plt.yticks(np.arange(len(p_labels)), p_labels)
+
+    if normalize:
+        data = data.astype('float') / data.sum(axis=1)[:, np.newaxis]
+
+    thresh = data.max() / 2.
+    for i, j in itertools.product(range(data.shape[0]), range(data.shape[1])):
+        if data[i, j] > 0.0:
+            plt.text(j, i, "{0:.2f}".format(data[i, j]),
+                     horizontalalignment="center", color="white"
+                     if data[i, j] > thresh else "black")
+
+    plt.tight_layout()
+    plt.savefig(filepath+'.png', bbox_inches='tight')
 
 def maybe_download(directory, filename, url):
   """Download filename from url unless it's already in directory."""
