@@ -15,6 +15,11 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pylab as plt
 
+def set_trace():
+    from IPython.core.debugger import Pdb
+    import sys
+    Pdb(color_scheme='Linux').set_trace(sys._getframe().f_back)
+
 from .cnn import CNN
 from .seq2seq_model import Seq2SeqModel
 from data_util.data_gen import DataGen
@@ -394,7 +399,7 @@ class Model(object):
             try:
                 input_feed[self.encoder_masks[l].name] = encoder_masks[l]
             except Exception as e:
-                ipdb.set_trace()
+                pass
 
         # Since our targets are decoder inputs shifted by one, we need one more.
         last_target = self.decoder_inputs[decoder_size].name
@@ -447,7 +452,7 @@ class Model(object):
                     img_data = np.asarray(img, dtype=np.uint8)
                 for idx in range(len(output_valid)):
                     output_filename = os.path.join(output_dir, 'image_%d.jpg'%(idx))
-                    attention = attentions[idx][:(int(real_len/4)-1)]
+                    attention = attentions[idx][:(int(real_len)-1)]
 
                     # I have got the attention_orig here, which is of size
                     # 32*len(ground_truth), the only thing left is to visualize
@@ -455,8 +460,8 @@ class Model(object):
                     # TODO here
                     attention_orig = np.zeros(real_len)
                     for i in range(real_len):
-                        if 0 < i/4-1 and i/4-1 < len(attention):
-                            attention_orig[i] = attention[int(i/4)-1]
+                        if 0 < i-1 and i-1 < len(attention):
+                            attention_orig[i] = attention[int(i)-1]
                     attention_orig = np.convolve(attention_orig, [0.199547,0.200226,0.200454,0.200226,0.199547], mode='same')
                     attention_orig = np.maximum(attention_orig, 0.3)
                     attention_out = np.zeros((h, real_len))
@@ -469,7 +474,7 @@ class Model(object):
                     img_out.save(output_filename)
                     #print (output_filename)
                 data_utils.plot_attention_matrix(
-                    attentions[:len(output_valid), :(int(real_len/4)-1)],
+                    attentions[:len(output_valid), :min((int(real_len)-1), len(ground_valid))],
                     ot, gt,
                     os.path.join(output_dir, 'att_mat'))
                 #assert False
