@@ -61,7 +61,7 @@ def plot_attention_matrix(data, p_labels, t_labels, filepath,
     This function prints and plots the confusion matrix.
     Normalization can be applied by setting `normalize=True`.
     """
-    plt.figure(figsize=(32, 32))
+    plt.figure(figsize=(32,32))
     plt.imshow(data, interpolation='nearest')
     # plt.colorbar()
     plt.xticks(np.arange(len(t_labels)), t_labels, rotation=45)

@@ -8,12 +8,6 @@ import _pickle as cPickle
 import random, math
 from data_util.bucketdata import BucketData
 
-def set_trace():
-    from IPython.core.debugger import Pdb
-    import sys
-    Pdb(color_scheme='Linux').set_trace(sys._getframe().f_back)
-
-
 class DataGen(object):
     GO = 1
     EOS = 2
@@ -22,7 +16,7 @@ class DataGen(object):
                  data_root, annotation_fn,
                  evaluate = False,
                  valid_target_len = float('inf'),
-                 img_width_range = (12, 320),
+                 img_width_range = (170, 1990), # iam width
                  word_len = 95): # iam max
         """
         :param data_root:
@@ -40,17 +34,21 @@ class DataGen(object):
             self.annotation_path = os.path.join(data_root, annotation_fn)
 
         if evaluate:
-            self.bucket_specs = [(int(word_len + 2), int(math.floor(64 / 4))), 
-                                 (int(word_len + 2), int(math.floor(108 / 4))),
-                                 (int(word_len + 2), int(math.floor(140 / 4))), 
-                                 (int(word_len + 2), int(math.floor(256 / 4)), ),
-                                 (int(math.floor(img_width_range[1] / 4)), int(word_len + 2))]
+            self.bucket_specs = [(int(math.ceil(img_width_range[0])), int(math.floor(img_width_range[1] / 7))),
+            (int(math.floor(img_width_range[1] / 7)), int(math.floor(img_width_range[1] / 6))),
+            (int(math.floor(img_width_range[1] / 6)), int(math.floor(img_width_range[1] / 5))),
+            (int(math.floor(img_width_range[1] / 5)), int(math.floor(img_width_range[1] / 4))),
+            (int(math.floor(img_width_range[1] / 4)), int(math.floor(img_width_range[1] / 3))),
+            (int(math.floor(img_width_range[1] / 3)), int(math.floor(img_width_range[1] / 2))),
+            (int(math.floor(img_width_range[1] / 2)), int(math.ceil(img_width_range[1])))]
         else:
-            self.bucket_specs = [(9 + 2, int(64 / 4)), 
-                             (15 + 2, int(108 / 4)),
-                             (17 + 2, int(140 / 4)), 
-                             (20 + 2, int(256 / 4)),
-                             (int(math.ceil(img_width_range[1] / 4)), word_len + 2)]
+            self.bucket_specs = [(int(math.ceil(img_width_range[0])), int(math.floor(img_width_range[1] / 7))),
+            (int(math.floor(img_width_range[1] / 7)), int(math.floor(img_width_range[1] / 6))),
+            (int(math.floor(img_width_range[1] / 6)), int(math.floor(img_width_range[1] / 5))),
+            (int(math.floor(img_width_range[1] / 5)), int(math.floor(img_width_range[1] / 4))),
+            (int(math.floor(img_width_range[1] / 4)), int(math.floor(img_width_range[1] / 3))),
+            (int(math.floor(img_width_range[1] / 3)), int(math.floor(img_width_range[1] / 2))),
+            (int(math.floor(img_width_range[1] / 2)), int(math.ceil(img_width_range[1])))]
 
         self.bucket_min_width, self.bucket_max_width = img_width_range
         self.image_height = img_height
@@ -146,7 +144,6 @@ class DataGen(object):
 
         word = [self.GO]
         for c in lex:
-            # assert 96 < ord(c) < 123 or ord(c)==95 or 64 < ord(c) < 91 or ord==63 or ord==62 or ord==60  or ord==59 or ord==58 or 47 < ord(c) < 58 or 37 <ord(c) <48 or ord(c)==33
             assert 32 < ord(c) < 123
             word.append(
                 ord(c)+3-33
