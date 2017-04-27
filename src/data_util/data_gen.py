@@ -22,7 +22,7 @@ class DataGen(object):
                  data_root, annotation_fn,
                  evaluate = False,
                  valid_target_len = float('inf'),
-                 img_width_range = (12, 320),
+                 img_width_range = (150, 1725),
                  word_len = 95): # iam max
         """
         :param data_root:
