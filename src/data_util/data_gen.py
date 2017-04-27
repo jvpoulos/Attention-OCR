@@ -22,7 +22,7 @@ class DataGen(object):
                  data_root, annotation_fn,
                  evaluate = False,
                  valid_target_len = float('inf'),
-                 img_width_range = (150, 1725),
+                 img_width_range = (12, 320),
                  word_len = 95): # iam max
         """
         :param data_root:
@@ -44,13 +44,13 @@ class DataGen(object):
                                  (int(word_len + 2), int(math.floor(108 / 4))),
                                  (int(word_len + 2), int(math.floor(140 / 4))), 
                                  (int(word_len + 2), int(math.floor(256 / 4)), ),
-                                 (int(word_len + 2), int(math.floor(img_width_range[1] / 4)))]
+                                 (int(math.floor(img_width_range[1] / 4)), int(word_len + 2))]
         else:
             self.bucket_specs = [(9 + 2, int(64 / 4)), 
                              (15 + 2, int(108 / 4)),
                              (17 + 2, int(140 / 4)), 
                              (20 + 2, int(256 / 4)),
-                             (word_len + 2, int(math.ceil(img_width_range[1] / 4)))]
+                             (int(math.ceil(img_width_range[1] / 4)), word_len + 2)]
 
         self.bucket_min_width, self.bucket_max_width = img_width_range
         self.image_height = img_height
