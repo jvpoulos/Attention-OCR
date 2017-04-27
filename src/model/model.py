@@ -469,7 +469,7 @@ class Model(object):
                     img_out.save(output_filename)
                     #print (output_filename)
                 data_utils.plot_attention_matrix(
-                    attentions[:len(output_valid), :min((int(real_len/4)-1), len(ground_valid))],
-                    ot.replace('_', ''), gt.replace('_', ''),
+                    attentions[:len(output_valid), : len(ground_valid)],
+                    ot, gt,
                     os.path.join(output_dir, 'att_mat'))
                 #assert False
