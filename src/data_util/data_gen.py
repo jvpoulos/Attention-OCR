@@ -37,18 +37,12 @@ class DataGen(object):
             self.bucket_specs = [(int(math.ceil(img_width_range[0])), int(math.floor(img_width_range[1] / 7))),
             (int(math.floor(img_width_range[1] / 7)), int(math.floor(img_width_range[1] / 6))),
             (int(math.floor(img_width_range[1] / 6)), int(math.floor(img_width_range[1] / 5))),
-            (int(math.floor(img_width_range[1] / 5)), int(math.floor(img_width_range[1] / 4))),
-            (int(math.floor(img_width_range[1] / 4)), int(math.floor(img_width_range[1] / 3))),
-            (int(math.floor(img_width_range[1] / 3)), int(math.floor(img_width_range[1] / 2))),
-            (int(math.floor(img_width_range[1] / 2)), int(math.ceil(img_width_range[1])))]
+            (int(math.floor(img_width_range[1] / 5)), int(math.floor(img_width_range[1] / 4)))]
         else:
             self.bucket_specs = [(int(math.ceil(img_width_range[0])), int(math.floor(img_width_range[1] / 7))),
             (int(math.floor(img_width_range[1] / 7)), int(math.floor(img_width_range[1] / 6))),
             (int(math.floor(img_width_range[1] / 6)), int(math.floor(img_width_range[1] / 5))),
-            (int(math.floor(img_width_range[1] / 5)), int(math.floor(img_width_range[1] / 4))),
-            (int(math.floor(img_width_range[1] / 4)), int(math.floor(img_width_range[1] / 3))),
-            (int(math.floor(img_width_range[1] / 3)), int(math.floor(img_width_range[1] / 2))),
-            (int(math.floor(img_width_range[1] / 2)), int(math.ceil(img_width_range[1])))]
+            (int(math.floor(img_width_range[1] / 5)), int(math.floor(img_width_range[1] / 4)))]
 
         self.bucket_min_width, self.bucket_max_width = img_width_range
         self.image_height = img_height
