@@ -473,8 +473,9 @@ class Model(object):
                     img_out = Image.fromarray(img_out_data.astype(np.uint8))
                     img_out.save(output_filename)
                     #print (output_filename)
+                set_trace()    
                 data_utils.plot_attention_matrix(
-                    attentions[:len(output_valid), :(int(real_len/4)-1)],
+                    attentions[:len(output_valid), : len(ground_valid)],
                     ot, gt,
                     os.path.join(output_dir, 'att_mat'))
                 #assert False
