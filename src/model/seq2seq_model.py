@@ -95,8 +95,7 @@ class Seq2SeqModel(object):
         cell = single_cell
 
         if attn_num_layers > 1:
-            cell = tf.contrib.rnn.DropoutWrapper(cell, input_keep_prob=0.5) # add dropout for multilayer decoder
-            cell = tf.contrib.rnn.MultiRNNCell([cell] * attn_num_layers, state_is_tuple=False)
+            cell = tf.contrib.rnn.core_rnn_cell.MultiRNNCell([single_cell] * attn_num_layers, state_is_tuple=False)
 
         # The seq2seq function: we use embedding for the input and attention.
         def seq2seq_f(lstm_inputs, decoder_inputs, seq_length, do_decode):
