@@ -34,15 +34,17 @@ class DataGen(object):
             self.annotation_path = os.path.join(data_root, annotation_fn)
 
         if evaluate:
-            self.bucket_specs = [(int(math.ceil(img_width_range[0])), int(math.floor(img_width_range[1] / 7))),
-            (int(math.floor(img_width_range[1] / 7)), int(math.floor(img_width_range[1] / 6))),
-            (int(math.floor(img_width_range[1] / 6)), int(math.floor(img_width_range[1] / 5))),
-            (int(math.floor(img_width_range[1] / 5)), int(math.floor(img_width_range[1] / 4)))]
+            self.bucket_specs = [(int(word_len + 2), int(math.ceil(img_width_range[1] / 8))), 
+                                (int(word_len + 2), int(math.ceil(img_width_range[1] / 6))),
+                                (int(word_len + 2), int(math.ceil(img_width_range[1] / 4))), 
+                                (int(word_len + 2), int(math.ceil(img_width_range[1] / 3))),
+                                (int(word_len + 2), int(math.floor(img_width_range[1] / 2)))]
         else:
-            self.bucket_specs = [(int(math.ceil(img_width_range[0])), int(math.floor(img_width_range[1] / 7))),
-            (int(math.floor(img_width_range[1] / 7)), int(math.floor(img_width_range[1] / 6))),
-            (int(math.floor(img_width_range[1] / 6)), int(math.floor(img_width_range[1] / 5))),
-            (int(math.floor(img_width_range[1] / 5)), int(math.floor(img_width_range[1] / 4)))]
+            self.bucket_specs = [(int(word_len + 2), int(math.ceil(img_width_range[1] / 8))), 
+                                (int(math.ceil(img_width_range[1] / 8)), int(math.ceil(img_width_range[1] / 6))),
+                                (int(math.ceil(img_width_range[1] / 6)), int(math.ceil(img_width_range[1] / 4))), 
+                                (int(math.ceil(img_width_range[1] / 4)), int(math.ceil(img_width_range[1] / 3))),
+                                (int(math.ceil(img_width_range[1] / 3)), int(math.floor(img_width_range[1] / 2)))]
 
         self.bucket_min_width, self.bucket_max_width = img_width_range
         self.image_height = img_height
