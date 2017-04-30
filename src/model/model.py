@@ -4,7 +4,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import random, time, os, shutil, math, sys, logging,ipdb
+import random, time, os, shutil, math, sys, logging, ipdb
 import numpy as np
 from six.moves import xrange  # pylint: disable=redefined-builtin
 from PIL import Image
@@ -14,11 +14,6 @@ from . import data_utils
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pylab as plt
-
-def set_trace():
-    from IPython.core.debugger import Pdb
-    import sys
-    Pdb(color_scheme='Linux').set_trace(sys._getframe().f_back)
 
 from .cnn import CNN
 from .seq2seq_model import Seq2SeqModel
@@ -450,31 +445,42 @@ class Model(object):
                     img_data = img_data.astype(np.uint8)
                 else:
                     img_data = np.asarray(img, dtype=np.uint8)
+                data = []
                 for idx in range(len(output_valid)):
                     output_filename = os.path.join(output_dir, 'image_%d.jpg'%(idx))
+                    # get the first fourth
                     attention = attentions[idx][:(int(real_len/4)-1)]
-
-                    # I have got the attention_orig here, which is of size
-                    # 32*len(ground_truth), the only thing left is to visualize
-                    # it and save it to output_filename
-                    # TODO here
+                    # repeat each values four times
                     attention_orig = np.zeros(real_len)
                     for i in range(real_len):
                         if 0 < i/4-1 and i/4-1 < len(attention):
                             attention_orig[i] = attention[int(i/4)-1]
+                    # do some scaling
                     attention_orig = np.convolve(attention_orig, [0.199547,0.200226,0.200454,0.200226,0.199547], mode='same')
                     attention_orig = np.maximum(attention_orig, 0.3)
+                    # copy values to other heights
                     attention_out = np.zeros((h, real_len))
                     for i in range(real_len):
                         attention_out[:,i] = attention_orig[i]
                     if len(img_data.shape) == 3:
                         attention_out = attention_out[:,:,np.newaxis]
+                    data.append(attention_out[0,:])
                     img_out_data = img_data * attention_out
                     img_out = Image.fromarray(img_out_data.astype(np.uint8))
                     img_out.save(output_filename)
-                    #print (output_filename)
-                data_utils.plot_attention_matrix(
-                    attentions[:len(output_valid), : len(ground_valid)],
-                    ot, gt,
-                    os.path.join(output_dir, 'att_mat'))
-                #assert False
+
+                    fig = plt.figure(figsize=(4, 10))
+                    gs = matplotlib.gridspec.GridSpec(
+                        2, 1, height_ratios=[10, 1],
+                        wspace=0.0, hspace=0.0,
+                        top=0.95, bottom=0.05, left=0.17, right=0.845)
+                    ax = plt.subplot(gs[0])
+                    ax.imshow(data, aspect='auto', interpolation='nearest', cmap='bwr')
+                    ax.set_xticklabels([])
+                    ax.set_yticks(np.arange(len(ot)))
+                    ax.set_yticklabels(ot)
+                    ax = plt.subplot(gs[1])
+                    ax.imshow(img, aspect='auto', interpolation='nearest', cmap='gray')
+                    ax.set_xticklabels([])
+                    ax.set_yticklabels([])
+                    fig.savefig(os.path.join(output_dir, 'att_mat.png'))
