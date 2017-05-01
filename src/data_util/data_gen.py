@@ -36,11 +36,11 @@ class DataGen(object):
         if evaluate:
             self.bucket_specs = [(int(math.floor(64 / 4)), int(word_len + 2)), (int(math.floor(108 / 4)), int(word_len + 2)),
                                  (int(math.floor(140 / 4)), int(word_len + 2)), (int(math.floor(256 / 4)), int(word_len + 2)),
-                                 (int(math.floor(img_width_range[1] / 4)), 32)]
+                                 (int(math.floor(img_width_range[1] / 4)), int(word_len + 2))]
         else:
             self.bucket_specs = [(int(64 / 4), 9 + 2), (int(108 / 4), 15 + 2),
                              (int(140 / 4), 17 + 2), (int(256 / 4), 20 + 2),
-                             (int(math.ceil(img_width_range[1] / 4)), 32)]
+                             (int(math.ceil(img_width_range[1] / 4)), int(word_len + 2))]
 
         self.bucket_min_width, self.bucket_max_width = img_width_range
         self.image_height = img_height
