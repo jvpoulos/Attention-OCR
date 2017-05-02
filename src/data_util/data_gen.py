@@ -34,13 +34,13 @@ class DataGen(object):
             self.annotation_path = os.path.join(data_root, annotation_fn)
 
         if evaluate:
-            self.bucket_specs = [(int(math.floor(img_width_range[0])), int(word_len + 2)) 
+            self.bucket_specs = [(int(math.floor(img_width_range[0])), int(word_len + 2)),
                              (int(math.ceil(img_width_range[1] / 9)), int(word_len + 2)),
                              (int(math.ceil(img_width_range[1] / 8)), int(word_len + 2)), 
                              (int(math.ceil(img_width_range[1] / 7)), int(word_len + 2)),
                              (int(math.ceil(img_width_range[1] / 6)), int(word_len + 2))]
         else:
-            self.bucket_specs = [(int(math.floor(img_width_range[0])), int(word_len + 2)) 
+            self.bucket_specs = [(int(math.floor(img_width_range[0])), int(word_len + 2)),
                              (int(math.ceil(img_width_range[1] / 9)), int(word_len + 2)),
                              (int(math.ceil(img_width_range[1] / 8)), int(word_len + 2)), 
                              (int(math.ceil(img_width_range[1] / 7)), int(word_len + 2)),
