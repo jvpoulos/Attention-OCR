@@ -128,9 +128,9 @@ You will see something like the following output in `log.txt`:
 
 ```
 
-Output images in `results/correct` (the output directory is set via parameter `output-dir` and the default is `results`). The example below is the attention visualization for the correct transcription `cure our mental incapacity we should be willing`:
+Output images in `results/correct` (the output directory is set via parameter `output-dir` and the default is `results`). The example below is the attention visualization for a correct transcription:
 
-![](http://imgur.com/HLJhisL)
+![](d04-089-02.gif)
 
 ### Parameters:
 
