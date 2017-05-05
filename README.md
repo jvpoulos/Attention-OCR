@@ -1,150 +1,143 @@
 # Attention-OCR
-Authours: [Qi Guo](http://qiguo.ml) and [Yuntian Deng](https://github.com/da03)
 
-Visual Attention based OCR. The model first runs a sliding CNN on the image (images are resized to height 32 while preserving aspect ratio). Then an LSTM is stacked on top of the CNN. Finally, an attention model is used as a decoder for producing the final outputs.
+
+Bidirectional LSTM encoder and attention-enhanced GRU decoder stacked on a multilayer CNN ([WYGIWYS](https://arxiv.org/pdf/1609.04938.pdf)) for image-to-transcription. 
+
+# Acknowledgements
+
+This repo is forked from [Attention-OCR](https://github.com/da03/Attention-OCR) by [Qi Guo](http://qiguo.ml) and [Yuntian Deng](https://github.com/da03). The model is described in their paper [What You Get Is What You See: A Visual Markup Decompiler](https://arxiv.org/pdf/1609.04938.pdf). 
+
+IAM image and transcription preprocessing from [Laia](https://github.com/jpuigcerver/Laia/).
 
 ![example image 0](http://cs.cmu.edu/~yuntiand/OCR-2.jpg)
 
 # Prerequsites
-Most of our code is written based on Tensorflow, but we also use Keras for the convolution part of our model. Besides, we use python package distance to calculate edit distance for evaluation. (However, that is not mandatory, if distance is not installed, we will do exact match).
 
-### Tensorflow: [Installation Instructions](https://www.tensorflow.org/get_started/os_setup#download-and-setup) (tested on 0.12.1)
+### Python 3 (tested on Python 3.5.2)
 
-### Distance (Optional):
+### Tensorflow 1.0: [Installation Instructions](https://www.tensorflow.org/get_started/os_setup#download-and-setup)
 
-```
-wget http://www.cs.cmu.edu/~yuntiand/Distance-0.1.3.tar.gz
-```
+### Distance (Required to calculate CER):
 
 ```
-tar zxf Distance-0.1.3.tar.gz
+pip3 install distance
 ```
 
-```
-cd distance; sudo python setup.py install
-```
-
-# Usage:
+# Image-to-transcription on IAM Handwriting Database (IAM):
 
 Note: We assume that the working directory is `Attention-OCR`.
 
-## Train
-
 ### Data Preparation
-We need a file (specified by parameter `data-path`) containing the path of images and the corresponding characters, e.g.:
+Follow steps for [IAM data preparation](https://github.com/jpuigcerver/Laia/tree/iam_new/egs/iam#data-preparation). IAM consists of ~10k images of handwritten text lines and their transcriptions. The code in the linked repo binarizes the images in a manner that preserves the original grayscale information, converts to JPEG, and scales to 64 pixel height. The code creates a folder for preprocessed images (`imgs_proc') and transcriptions (`htr/lang/word').
+
+[IAM original](https://www.dropbox.com/s/e0gibz8jhpppuix/a01-000u-00.png)
+[IAM preprocessed](https://www.dropbox.com/s/gimdddm9vxsvyrh/a01-000u-00.jpg)
+
+Create a file `lines_train.txt' from the transcription `tr.txt' that replaces whitespace with underscore and contains the path of images and the corresponding characters, e.g.:
 
 ```
-path/to/image1 abc
-path/to/image2 def
+./imgs_proc/a01-000u-00.jpg A_MOVE_to_stop_Mr._Gaitskell_from
+./imgs_proc/a01-000u-01.jpg nominating_any_more_Labour_life_Peers
+./imgs_proc/a01-000u-02.jpg is_to_be_made_at_a_meeting_of_Labour
 ```
+Also create file `lines_val.txt' from `htr/lang/word/va.txt' following the same format as above. 
 
-And we also need to specify a `data-base-dir` parameter such that we read the images from path `data-base-dir/path/to/image`. If `data-path` contains absolute path of images, then `data-base-dir` needs to be set to `/`.
-
-### A Toy Example
-
-For a toy example, we have prepared a training dataset of the specified format, which is a subset of [Synth 90k](http://www.robots.ox.ac.uk/~vgg/data/text/)
+### Train
 
 ```
-wget http://www.cs.cmu.edu/~yuntiand/sample.tgz
+python3 src/launcher.py \
+--phase=train \
+--data-path=lines_train.txt \
+--data-base-dir=iamdb \
+--gpu-id=0 \
+--target-vocab-size=93 \
+--use-gru \
+--no-load-model
 ```
 
-```
-tar zxf sample.tgz
-```
-
-```
-python src/launcher.py --phase=train --data-path=sample/sample.txt --data-base-dir=sample --log-path=log.txt --no-load-model
-```
-
-After a while, you will see something like the following output in `log.txt`:
+You will see something like the following output in `log.txt':
 
 ```
 ...
-2016-06-08 20:47:22,335 root  INFO     Created model with fresh parameters.
-2016-06-08 20:47:52,852 root  INFO     current_step: 0
-2016-06-08 20:48:01,253 root  INFO     step_time: 8.400597, step perplexity: 38.998714
-2016-06-08 20:48:01,385 root  INFO     current_step: 1
-2016-06-08 20:48:07,166 root  INFO     step_time: 5.781749, step perplexity: 38.998445
-2016-06-08 20:48:07,337 root  INFO     current_step: 2
-2016-06-08 20:48:12,322 root  INFO     step_time: 4.984972, step perplexity: 39.006730
-2016-06-08 20:48:12,347 root  INFO     current_step: 3
-2016-06-08 20:48:16,821 root  INFO     step_time: 4.473902, step perplexity: 39.000267
-2016-06-08 20:48:16,859 root  INFO     current_step: 4
-2016-06-08 20:48:21,452 root  INFO     step_time: 4.593249, step perplexity: 39.009864
-2016-06-08 20:48:21,530 root  INFO     current_step: 5
-2016-06-08 20:48:25,878 root  INFO     step_time: 4.348195, step perplexity: 38.987707
-2016-06-08 20:48:26,016 root  INFO     current_step: 6
-2016-06-08 20:48:30,851 root  INFO     step_time: 4.835423, step perplexity: 39.022887
-```
-
-Note that it takes quite a long time to reach convergence, since we are training the CNN and attention model simultaneously.
-
-## Test and visualize attention results
-
-The test data format shall be the same as training data format. We have also prepared a test dataset of the specified format, which includes ICDAR03, ICDAR13, IIIT5k and SVT.
-
-```
-wget http://www.cs.cmu.edu/~yuntiand/evaluation_data.tgz
-```
-
-```
-tar zxf evaluation_data.tgz
-```
-
-We also provide a trained model on Synth 90K:
-
-```
-wget http://www.cs.cmu.edu/~yuntiand/model.tgz
-```
-
-```
-tar zxf model.tgz
-```
-
-```
-python src/launcher.py --phase=test --visualize --data-path=evaluation_data/svt/test.txt --data-base-dir=evaluation_data/svt --log-path=log.txt --load-model --model-dir=model --output-dir=results
-```
-
-After a while, you will see something like the following output in `log.txt`:
-
-```
-2016-06-08 22:36:31,638 root  INFO     Reading model parameters from model/translate.ckpt-47200
-2016-06-08 22:36:40,529 root  INFO     Compare word based on edit distance.
-2016-06-08 22:36:41,652 root  INFO     step_time: 1.119277, step perplexity: 1.056626
-2016-06-08 22:36:41,660 root  INFO     1.000000 out of 1 correct
-2016-06-08 22:36:42,358 root  INFO     step_time: 0.696687, step perplexity: 2.003350
-2016-06-08 22:36:42,363 root  INFO     1.666667 out of 2 correct
-2016-06-08 22:36:42,831 root  INFO     step_time: 0.466550, step perplexity: 1.501963
-2016-06-08 22:36:42,835 root  INFO     2.466667 out of 3 correct
-2016-06-08 22:36:43,402 root  INFO     step_time: 0.562091, step perplexity: 1.269991
-2016-06-08 22:36:43,418 root  INFO     3.366667 out of 4 correct
-2016-06-08 22:36:43,897 root  INFO     step_time: 0.477545, step perplexity: 1.072437
-2016-06-08 22:36:43,905 root  INFO     4.366667 out of 5 correct
-2016-06-08 22:36:44,107 root  INFO     step_time: 0.195361, step perplexity: 2.071796
-2016-06-08 22:36:44,127 root  INFO     5.144444 out of 6 correct
+2017-05-04 19:15:44,919 root  INFO     Created model with fresh parameters.
+2017-05-04 19:17:22,927 root  INFO     Generating first batch
+2017-05-04 19:17:41,591 root  INFO     step 0.000000 - time: 14.091797, loss: 4.537364, perplexity: 93.444157, precision: 0.000000, batch_len: 438.000000
+2017-05-04 19:17:43,527 root  INFO     step 1.000000 - time: 1.669232, loss: 4.370135, perplexity: 79.054328, precision: 0.000000, batch_len: 416.000000
+2017-05-04 19:17:45,266 root  INFO     step 2.000000 - time: 1.706899, loss: 4.140279, perplexity: 62.820334, precision: 0.000000, batch_len: 404.000000
+2017-05-04 19:17:46,947 root  INFO     step 3.000000 - time: 1.609537, loss: 3.799597, perplexity: 44.683175, precision: 0.000000, batch_len: 395.000000
+2017-05-04 19:17:48,831 root  INFO     step 4.000000 - time: 1.846071, loss: 3.457146, perplexity: 31.726298, precision: 0.000000, batch_len: 478.000000
+2017-05-04 19:17:50,711 root  INFO     step 5.000000 - time: 1.644378, loss: 3.301664, perplexity: 27.157789, precision: 0.000000, batch_len: 463.000000
+2017-05-04 19:17:52,411 root  INFO     step 6.000000 - time: 1.674972, loss: 3.396979, perplexity: 29.873725, precision: 0.000000, batch_len: 458.000000
+2017-05-04 19:17:54,271 root  INFO     step 7.000000 - time: 1.675854, loss: 3.489168, perplexity: 32.758671, precision: 0.000000, batch_len: 432.000000
+2017-05-04 19:17:55,950 root  INFO     step 8.000000 - time: 1.601847, loss: 3.292296, perplexity: 26.904564, precision: 0.000000, batch_len: 441.000000
+2017-05-04 19:17:57,776 root  INFO     step 9.000000 - time: 1.704575, loss: 3.170712, perplexity: 23.824447, precision: 0.000000, batch_len: 429.000000
+2017-05-04 19:17:59,280 root  INFO     step 10.000000 - time: 0.817045, loss: 3.181931, perplexity: 24.093222, precision: 0.000000, batch_len: 419.000000
 
 ```
 
-Example output images in `results/correct` (the output directory is set via parameter `output-dir` and the default is `results`): (Look closer to see it clearly.)
+Model checkpoints saved in `model` (the output directory is set via parameter `model-dir` and the default is `model`).
 
-Format: Image `index` (`predicted`/`ground truth`) `Image file`
+### Validate model and visualize attention
 
-Image 0 (j/j): ![example image 0](http://cs.cmu.edu/~yuntiand/2evaluation_data_icdar13_images_word_370.png/image_0.jpg)
+We provide a trained model on IAM:
 
-Image 1 (u/u): ![example image 1](http://cs.cmu.edu/~yuntiand/2evaluation_data_icdar13_images_word_370.png/image_1.jpg)
+```
+wget https://www.dropbox.com/s/ujxeahr1voo0sl8/model_iamdb_softmax.tar.gz
+```
 
-Image 2 (n/n): ![example image 2](http://cs.cmu.edu/~yuntiand/2evaluation_data_icdar13_images_word_370.png/image_2.jpg)
+```
+tar -xvzf model_iamdb_softmax.tar.gz
+```
 
-Image 3 (g/g): ![example image 3](http://cs.cmu.edu/~yuntiand/2evaluation_data_icdar13_images_word_370.png/image_3.jpg)
+```
+python3 src/launcher.py \
+--phase=test \
+--data-path=lines_val.txt \
+--data-base-dir=iamdb \
+--model-dir=model_iamdb_softmax \
+--gpu-id=0 \
+--target-vocab-size=93 \
+--use-gru \
+--load-model
+```
 
-Image 4 (l/l): ![example image 4](http://cs.cmu.edu/~yuntiand/2evaluation_data_icdar13_images_word_370.png/image_4.jpg)
+You will see something like the following output in `log.txt`:
 
-Image 5 (e/e): ![example image 5](http://cs.cmu.edu/~yuntiand/2evaluation_data_icdar13_images_word_370.png/image_5.jpg)
+```
+2017-05-04 20:06:32,116 root  INFO     Reading model parameters from model_iamdb_softmax/translate.ckpt-731000
+2017-05-04 20:09:54,266 root  INFO     Compare word based on edit distance.
+2017-05-04 20:09:57,299 root  INFO     step_time: 2.684323, loss: 12.952633, step perplexity: 421946.118697
+2017-05-04 20:10:10,894 root  INFO     0.489362 out of 1 correct
+2017-05-04 20:10:11,710 root  INFO     step_time: 0.779765, loss: 16.425102, step perplexity: 13593499.165457
+2017-05-04 20:10:22,828 root  INFO     0.771970 out of 2 correct
+2017-05-04 20:10:23,627 root  INFO     step_time: 0.776458, loss: 20.803520, step perplexity: 1083562653.786069
+2017-05-04 20:10:47,098 root  INFO     1.423133 out of 3 correct
+2017-05-04 20:10:48,040 root  INFO     step_time: 0.918638, loss: 11.657264, step perplexity: 115527.486132
+2017-05-04 20:11:04,398 root  INFO     2.246663 out of 4 correct
+2017-05-04 20:11:07,883 root  INFO     step_time: 3.448558, loss: 10.126567, step perplexity: 24998.394628
+2017-05-04 20:11:25,554 root  INFO     2.483505 out of 5 correct
+2017-05-04 20:11:26,439 root  INFO     step_time: 0.846741, loss: 19.127279, step perplexity: 202708446.724307
+2017-05-04 20:11:54,204 root  INFO     3.203505 out of 6 correct
+2017-05-04 20:11:55,547 root  INFO     step_time: 1.328614, loss: 14.361533, step perplexity: 1726372.881045
+2017-05-04 20:12:16,062 root  INFO     3.586483 out of 7 correct
+2017-05-04 20:12:16,933 root  INFO     step_time: 0.846231, loss: 13.471820, step perplexity: 709148.247623
+2017-05-04 20:12:53,892 root  INFO     4.261483 out of 8 correct
+2017-05-04 20:12:55,135 root  INFO     step_time: 1.206629, loss: 8.952523, step perplexity: 7727.365214
+2017-05-04 20:13:24,057 root  INFO     5.025120 out of 9 correct
+2017-05-04 20:13:24,860 root  INFO     step_time: 0.770344, loss: 17.900974, step perplexity: 59469508.304005
 
+```
 
-# Parameters:
+Output images in `results/correct` (the output directory is set via parameter `output-dir` and the default is `results`). The example below is the attention visualization for the correct transcription `cure our mental incapacity we should be willing`:
+
+![](https://www.dropbox.com/s/xzylhcw53v5tryj/d04-089-02.gif)
+
+### Parameters:
+
+Default parameters set in the file `src/exp_config.py`.
 
 - Control
+    * `GPU-ID`: ID number of the GPU. 
     * `phase`: Determine whether to train or test.
     * `visualize`: Valid if `phase` is set to test. Output the attention maps on the original image.
     * `load-model`: Load model from `model-dir` or not.
@@ -163,17 +156,12 @@ Image 5 (e/e): ![example image 5](http://cs.cmu.edu/~yuntiand/2evaluation_data_i
     * `initial-learning-rate`: Initial learning rate, note the we use AdaDelta, so the initial value doe not matter much.
 
 - Network
+    * `reg-val`: Lambda for L2 regularization losses.
+    * `clip-gradients`: Whether to perform gradient clipping.
+    * `max-gradient-norm`: Clip gradients to this norm.
     * `target-embedding-size`: Embedding dimension for each target.
+    * `opt-attn`: Which attention mechanism to use: 'softmax' (default); 'sigmoid'; 'no_attn'.
     * `attn-use-lstm`: Whether or not use LSTM attention decoder cell.
     * `attn-num-hidden`: Number of hidden units in attention decoder cell.
     * `attn-num-layers`: Number of layers in attention decoder cell. (Encoder number of hidden units will be `attn-num-hidden`*`attn-num-layers`).
     * `target-vocab-size`: Target vocabulary size. Default is = 26+10+3 # 0: PADDING, 1: GO, 2: EOS, >2: 0-9, a-z
-
-
-# References
-
-[Convert a formula to its LaTex source](https://github.com/harvardnlp/im2markup)
-
-[What You Get Is What You See: A Visual Markup Decompiler](https://arxiv.org/pdf/1609.04938.pdf)
-
-[Torch attention OCR](https://github.com/da03/torch-Attention-OCR)
