@@ -130,7 +130,7 @@ You will see something like the following output in `log.txt`:
 
 Output images in `results/correct` (the output directory is set via parameter `output-dir` and the default is `results`). The example below is the attention visualization for the correct transcription `cure our mental incapacity we should be willing`:
 
-![](https://www.dropbox.com/s/xzylhcw53v5tryj/d04-089-02.gif)
+![](http://imgur.com/HLJhisL)
 
 ### Parameters:
 
