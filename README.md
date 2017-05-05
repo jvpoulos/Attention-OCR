@@ -3,12 +3,6 @@
 
 Bidirectional LSTM encoder and attention-enhanced GRU decoder stacked on a multilayer CNN ([WYGIWYS](https://arxiv.org/pdf/1609.04938.pdf)) for image-to-transcription. 
 
-# Acknowledgements
-
-This repo is forked from [Attention-OCR](https://github.com/da03/Attention-OCR) by [Qi Guo](http://qiguo.ml) and [Yuntian Deng](https://github.com/da03). The model is described in their paper [What You Get Is What You See: A Visual Markup Decompiler](https://arxiv.org/pdf/1609.04938.pdf). 
-
-IAM image and transcription preprocessing from [Laia](https://github.com/jpuigcerver/Laia/).
-
 ![example image 0](http://cs.cmu.edu/~yuntiand/OCR-2.jpg)
 
 # Prerequsites
@@ -23,7 +17,7 @@ IAM image and transcription preprocessing from [Laia](https://github.com/jpuigce
 pip3 install distance
 ```
 
-# Image-to-transcription on IAM Handwriting Database (IAM):
+# Image-to-transcription on IAM:
 
 Note: We assume that the working directory is `Attention-OCR`.
 
@@ -165,3 +159,9 @@ Default parameters set in the file `src/exp_config.py`.
     * `attn-num-hidden`: Number of hidden units in attention decoder cell.
     * `attn-num-layers`: Number of layers in attention decoder cell. (Encoder number of hidden units will be `attn-num-hidden`*`attn-num-layers`).
     * `target-vocab-size`: Target vocabulary size. Default is = 26+10+3 # 0: PADDING, 1: GO, 2: EOS, >2: 0-9, a-z
+
+# Acknowledgements
+
+This repo is forked from [Attention-OCR](https://github.com/da03/Attention-OCR) by [Qi Guo](http://qiguo.ml) and [Yuntian Deng](https://github.com/da03). The model is described in their paper [What You Get Is What You See: A Visual Markup Decompiler](https://arxiv.org/pdf/1609.04938.pdf). 
+
+IAM image and transcription preprocessing from [Laia](https://github.com/jpuigcerver/Laia/).
