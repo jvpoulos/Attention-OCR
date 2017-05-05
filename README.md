@@ -9,7 +9,7 @@ Bidirectional LSTM encoder and attention-enhanced GRU decoder stacked on a multi
 
 ### Python 3 (tested on Python 3.5.2)
 
-### Tensorflow 1.0: [Installation Instructions](https://www.tensorflow.org/get_started/os_setup#download-and-setup)
+### Tensorflow 1.0
 
 ### Distance (Required to calculate CER):
 
@@ -22,19 +22,19 @@ pip3 install distance
 Note: We assume that the working directory is `Attention-OCR`.
 
 ### Data Preparation
-Follow steps for [IAM data preparation](https://github.com/jpuigcerver/Laia/tree/iam_new/egs/iam#data-preparation). IAM consists of ~10k images of handwritten text lines and their transcriptions. The code in the linked repo binarizes the images in a manner that preserves the original grayscale information, converts to JPEG, and scales to 64 pixel height. The code creates a folder for preprocessed images (`imgs_proc') and transcriptions (`htr/lang/word').
+Follow steps for [IAM data preparation](https://github.com/jpuigcerver/Laia/tree/iam_new/egs/iam#data-preparation). IAM consists of ~10k images of handwritten text lines and their transcriptions. The code in the linked repo binarizes the images in a manner that preserves the original grayscale information, converts to JPEG, and scales to 64 pixel height. The code creates a folder for preprocessed images `imgs_proc` and transcriptions `htr/lang/word`.
 
-[IAM original](https://www.dropbox.com/s/e0gibz8jhpppuix/a01-000u-00.png)
-[IAM preprocessed](https://www.dropbox.com/s/gimdddm9vxsvyrh/a01-000u-00.jpg)
+![IAM original](demo/a01-000u-00.png)
+![IAM preprocessed](demo/a01-000u-00.jpg)
 
-Create a file `lines_train.txt' from the transcription `tr.txt' that replaces whitespace with underscore and contains the path of images and the corresponding characters, e.g.:
+Create a file `lines_train.txt` from the transcription `tr.txt` that replaces whitespace with underscore and contains the path of images and the corresponding characters, e.g.:
 
 ```
 ./imgs_proc/a01-000u-00.jpg A_MOVE_to_stop_Mr._Gaitskell_from
 ./imgs_proc/a01-000u-01.jpg nominating_any_more_Labour_life_Peers
 ./imgs_proc/a01-000u-02.jpg is_to_be_made_at_a_meeting_of_Labour
 ```
-Also create file `lines_val.txt' from `htr/lang/word/va.txt' following the same format as above. 
+Also create file `lines_val.txt` from `htr/lang/word/va.txt` following the same format as above. 
 
 ### Train
 
@@ -49,7 +49,7 @@ python3 src/launcher.py \
 --no-load-model
 ```
 
-You will see something like the following output in `log.txt':
+You will see something like the following output in `log.txt`:
 
 ```
 ...
@@ -124,7 +124,7 @@ You will see something like the following output in `log.txt`:
 
 Output images in `results/correct` (the output directory is set via parameter `output-dir` and the default is `results`). The example below is the attention visualization for a correct transcription:
 
-![](d04-089-02.gif)
+![demo](demo/d04-089-02.gif)
 
 ### Parameters:
 
@@ -154,7 +154,7 @@ Default parameters set in the file `src/exp_config.py`.
     * `clip-gradients`: Whether to perform gradient clipping.
     * `max-gradient-norm`: Clip gradients to this norm.
     * `target-embedding-size`: Embedding dimension for each target.
-    * `opt-attn`: Which attention mechanism to use: 'softmax' (default); 'sigmoid'; 'no_attn'.
+    * `opt-attn`: Which attention mechanism to use: `softmax` (default); `sigmoid`; `no_attn`.
     * `attn-use-lstm`: Whether or not use LSTM attention decoder cell.
     * `attn-num-hidden`: Number of hidden units in attention decoder cell.
     * `attn-num-layers`: Number of layers in attention decoder cell. (Encoder number of hidden units will be `attn-num-hidden`*`attn-num-layers`).
