@@ -16,8 +16,8 @@ class DataGen(object):
                  data_root, annotation_fn,
                  evaluate = False,
                  valid_target_len = float('inf'),
-                 img_width_range = (170, 1990), # iam width
-                 word_len = 95): # iam max
+                 img_width_range = (170, 1016), # iam training width range
+                 word_len = 81): # iam training max
         """
         :param data_root:
         :param annotation_fn:
@@ -117,6 +117,7 @@ class DataGen(object):
             img_bw = np.asarray(img_bw, dtype=np.uint8)
             img_bw = img_bw[np.newaxis, :]
 
+        # '|':124
         # 'a':97, 'z':122
         # '_':95
         # 'A':65, 'Z':90
@@ -140,7 +141,7 @@ class DataGen(object):
 
         word = [self.GO]
         for c in lex:
-            assert 32 < ord(c) < 123
+            assert 32 < ord(c) < 125
             word.append(
                 ord(c)+3-33
             )
