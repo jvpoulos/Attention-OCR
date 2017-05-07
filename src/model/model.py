@@ -469,18 +469,18 @@ class Model(object):
                     img_out = Image.fromarray(img_out_data.astype(np.uint8))
                     img_out.save(output_filename)
 
-                    fig = plt.figure(figsize=(4, 10))
-                    gs = matplotlib.gridspec.GridSpec(
-                        2, 1, height_ratios=[10, 1],
-                        wspace=0.0, hspace=0.0,
-                        top=0.95, bottom=0.05, left=0.17, right=0.845)
-                    ax = plt.subplot(gs[0])
-                    ax.imshow(data, aspect='auto', interpolation='nearest', cmap='bwr')
-                    ax.set_xticklabels([])
-                    ax.set_yticks(np.arange(len(ot)))
-                    ax.set_yticklabels(ot)
-                    ax = plt.subplot(gs[1])
-                    ax.imshow(img, aspect='auto', interpolation='nearest', cmap='gray')
-                    ax.set_xticklabels([])
-                    ax.set_yticklabels([])
-                    fig.savefig(os.path.join(output_dir, 'att_mat.png'))
+                    # fig = plt.figure(figsize=(4, 10))
+                    # gs = matplotlib.gridspec.GridSpec(
+                    #     2, 1, height_ratios=[10, 1],
+                    #     wspace=0.0, hspace=0.0,
+                    #     top=0.95, bottom=0.05, left=0.17, right=0.845)
+                    # ax = plt.subplot(gs[0])
+                    # ax.imshow(data, aspect='auto', interpolation='nearest', cmap='bwr')
+                    # ax.set_xticklabels([])
+                    # ax.set_yticks(np.arange(len(ot)))
+                    # ax.set_yticklabels(ot)
+                    # ax = plt.subplot(gs[1])
+                    # ax.imshow(img, aspect='auto', interpolation='nearest', cmap='gray')
+                    # ax.set_xticklabels([])
+                    # ax.set_yticklabels([])
+                    # fig.savefig(os.path.join(output_dir, 'att_mat.png'))
