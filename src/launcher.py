@@ -104,7 +104,7 @@ def process_args(args, defaults):
                               % (defaults.MAX_GRADIENT_NORM)))
     parser.add_argument('--opt-attn', dest="opt_attn",
                         type=str, default=defaults.OPT_ATTN,
-                        choices=['softmax', 'sigmoid', 'no_attn'],
+                        choices=['softmax','log_softmax', 'sigmoid', 'no_attn'],
                         help=('Attention mechanism used for decoder, default=%s'
                             %(defaults.OPT_ATTN)))
     parser.set_defaults(opt_attn=defaults.OPT_ATTN)
