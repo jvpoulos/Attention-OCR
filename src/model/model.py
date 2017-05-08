@@ -456,31 +456,40 @@ class Model(object):
                         if 0 < i/4-1 and i/4-1 < len(attention):
                             attention_orig[i] = attention[int(i/4)-1]
                     # do some scaling
-                    attention_orig = np.convolve(attention_orig, [0.199547,0.200226,0.200454,0.200226,0.199547], mode='same')
+                    attention_orig = np.convolve(
+                        attention_orig,
+                        [0.199547, 0.200226, 0.200454, 0.200226, 0.199547],
+                        mode='same')
                     attention_orig = np.maximum(attention_orig, 0.3)
                     # copy values to other heights
                     attention_out = np.zeros((h, real_len))
                     for i in range(real_len):
-                        attention_out[:,i] = attention_orig[i]
+                        attention_out[:, i] = attention_orig[i]
                     if len(img_data.shape) == 3:
-                        attention_out = attention_out[:,:,np.newaxis]
-                    data.append(attention_out[0,:])
+                        attention_out = attention_out[:, :, np.newaxis]
+                    data.append(attention_out[0, :])
                     img_out_data = img_data * attention_out
                     img_out = Image.fromarray(img_out_data.astype(np.uint8))
                     img_out.save(output_filename)
 
-                    fig = plt.figure(figsize=(4, 10))
+                # plot ~ 5% of the time
+                if np.random.random() < 0.05:
+                    fig = plt.figure(figsize=(2, 6))
                     gs = matplotlib.gridspec.GridSpec(
-                        2, 1, height_ratios=[10, 1],
+                        2, 1, height_ratios=[len(ot)*2, 1],
                         wspace=0.0, hspace=0.0,
                         top=0.95, bottom=0.05, left=0.17, right=0.845)
                     ax = plt.subplot(gs[0])
-                    ax.imshow(data, aspect='auto', interpolation='nearest', cmap='bwr')
+                    ax.imshow(
+                        data, aspect='auto', interpolation='nearest', cmap='gray')
                     ax.set_xticklabels([])
                     ax.set_yticks(np.arange(len(ot)))
-                    ax.set_yticklabels(ot)
+                    ax.set_yticklabels(ot.replace('_', ' '))
+                    ax.tick_params(axis=u'both', which=u'both', length=0)
                     ax = plt.subplot(gs[1])
-                    ax.imshow(img, aspect='auto', interpolation='nearest', cmap='gray')
+                    ax.imshow(
+                        img, aspect='auto', interpolation='nearest', cmap='gray')
                     ax.set_xticklabels([])
                     ax.set_yticklabels([])
+                    ax.tick_params(axis=u'both', which=u'both', length=0)
                     fig.savefig(os.path.join(output_dir, 'att_mat.png'))
