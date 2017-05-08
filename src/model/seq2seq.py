@@ -465,7 +465,7 @@ def attention_decoder(decoder_inputs, initial_state, attention_states, cell,
       If True, initialize the attentions from the initial state and attention
       states -- useful when we wish to resume decoding from a previously
       stored decoder state and attention states.
-    opt_attn=: which attention mechanism to use: 'softmax' (default); 'sigmoid'; no_attn'
+    opt_attn=: which attention mechanism to use.
 
   Returns:
     A tuple of the form (outputs, state), where:
@@ -539,6 +539,8 @@ def attention_decoder(decoder_inputs, initial_state, attention_states, cell,
             a = tf.sigmoid(s)
           elif opt_attn=='softmax':
             a = nn_ops.softmax(s)
+          elif opt_attn=='log_softmax':
+            a = nn_ops.log_softmax(s)
           ss = a
         #  a = tf.Print(a, [a], message="a: ",summarize=30)
           # Now calculate the attention-weighted vector d.
