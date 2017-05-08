@@ -484,7 +484,7 @@ class Model(object):
                         data, aspect='auto', interpolation='nearest', cmap='gray')
                     ax.set_xticklabels([])
                     ax.set_yticks(np.arange(len(ot)))
-                    ax.set_yticklabels(ot.replace('_', ' '))
+                    ax.set_yticklabels(ot.replace('|', ' '))
                     ax.tick_params(axis=u'both', which=u'both', length=0)
                     ax = plt.subplot(gs[1])
                     ax.imshow(
