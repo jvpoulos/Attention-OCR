@@ -122,9 +122,13 @@ You will see something like the following output in `log.txt`:
 
 ```
 
-Output images in `results/correct` (the output directory is set via parameter `output-dir` and the default is `results`). The example below is the attention visualization for a correct transcription:
+Output images in `results` (the output directory is set via parameter `output-dir` and the default is `results`). This example visualizes attention on an image:
 
-![demo](demo/d04-089-02.gif)
+![demo](demo/d01-052-00.gif)
+
+This example plots the attention alignment over an image:
+
+![demo](demo/att_mat.png)
 
 ### Parameters:
 
