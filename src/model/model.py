@@ -26,6 +26,12 @@ try:
 except ImportError:
     distance_loaded = False
 
+# Select gpu
+import os
+gpu = 0
+os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   # see issue #152
+os.environ["CUDA_VISIBLE_DEVICES"]= "{}".format(gpu)
+
 class Model(object):
 
     def __init__(self,

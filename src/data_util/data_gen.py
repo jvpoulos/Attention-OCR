@@ -15,8 +15,7 @@ class DataGen(object):
                  data_root, annotation_fn,
                  evaluate = False,
                  valid_target_len = float('inf'),
-                 #img_width_range = (100, 3504), # peps width range
-                 img_width_range = (170, 1016), # iam training width range
+                 img_width_range = (100, 3504), # peps width range
                  word_len = 446): # peps max
         """
         :param data_root:
@@ -41,10 +40,10 @@ class DataGen(object):
                              (int(math.ceil(img_width_range[1] / 2)), int(95 + 2))]
         else:
             self.bucket_specs = [(int(math.floor(img_width_range[0])), int(word_len + 2)),
-                             (int(math.ceil(img_width_range[1] / 5)), int(word_len + 2)),
-                             (int(math.ceil(img_width_range[1] / 4)), int(word_len + 2)), 
-                             (int(math.ceil(img_width_range[1] / 3)), int(word_len + 2)),
-                             (int(math.ceil(img_width_range[1] / 2)), int(word_len + 2))]
+                             (int(math.ceil(img_width_range[1] / 12)), int(word_len + 2)),
+                             (int(math.ceil(img_width_range[1] / 11)), int(word_len + 2)), 
+                             (int(math.ceil(img_width_range[1] / 10)), int(word_len + 2)),
+                             (int(math.ceil(img_width_range[1] / 9)), int(word_len + 2))]
 
         self.bucket_min_width, self.bucket_max_width = img_width_range
         self.image_height = img_height
