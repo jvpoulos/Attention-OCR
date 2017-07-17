@@ -15,7 +15,8 @@ class DataGen(object):
                  data_root, annotation_fn,
                  evaluate = False,
                  valid_target_len = float('inf'),
-                 img_width_range = (100, 3504), # peps width range
+                 #img_width_range = (100, 3504), # peps width range
+                 img_width_range = (170, 1016), # iam training width range
                  word_len = 446): # peps max
         """
         :param data_root:
