@@ -1,6 +1,5 @@
-__author__ = 'moonkey'
-
 import os
+import cyrtranslit
 import numpy as np
 from PIL import Image
 from collections import Counter
@@ -16,8 +15,8 @@ class DataGen(object):
                  data_root, annotation_fn,
                  evaluate = False,
                  valid_target_len = float('inf'),
-                 img_width_range = (170, 1016), # iam training width range
-                 word_len = 81): # iam training max
+                 img_width_range = (100, 3504), # peps width range
+                 word_len = 446): # peps max
         """
         :param data_root:
         :param annotation_fn:
@@ -93,6 +92,7 @@ class DataGen(object):
         self.clear()
 
     def read_data(self, img_path, lex):
+        lex = cyrtranslit.to_cyrillic(lex, 'ru') # transliterate Cyrillic script text into Roman alphabet text
         assert 0 < len(lex) < self.bucket_specs[-1][1]
         # L = R * 299/1000 + G * 587/1000 + B * 114/1000
         with open(os.path.join(self.data_root, img_path), 'rb') as img_file:
