@@ -1,5 +1,4 @@
 import os
-import cyrtranslit
 import numpy as np
 from PIL import Image
 from collections import Counter
@@ -92,7 +91,6 @@ class DataGen(object):
         self.clear()
 
     def read_data(self, img_path, lex):
-        lex = cyrtranslit.to_cyrillic(lex, 'ru') # transliterate Cyrillic script text into Roman alphabet text
         assert 0 < len(lex) < self.bucket_specs[-1][1]
         # L = R * 299/1000 + G * 587/1000 + B * 114/1000
         with open(os.path.join(self.data_root, img_path), 'rb') as img_file:
