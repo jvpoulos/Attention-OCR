@@ -137,19 +137,19 @@ class CNN(object):
         net = ConvRelu(net, 512, (3, 3), 'conv_conv6')
         net = max_2x1pool(net, 'conv_pool4')
 
-        net = ConvReluBN(net, 1024, (3, 3), 'conv_conv6', is_training)
-        net = ConvRelu(net, 1024, (3, 3), 'conv_conv7')
+        net = ConvReluBN(net, 1024, (3, 3), 'conv_conv7', is_training)
+        net = ConvRelu(net, 1024, (3, 3), 'conv_conv8')
         net = max_2x1pool(net, 'conv_pool5')
 
-        net = ConvReluBN(net, 2048, (3, 3), 'conv_conv7', is_training)
-        net = ConvRelu(net, 2048, (3, 3), 'conv_conv8')
+        net = ConvReluBN(net, 2048, (3, 3), 'conv_conv9', is_training)
+        net = ConvRelu(net, 2048, (3, 3), 'conv_conv10')
         net = max_2x1pool(net, 'conv_pool6')
 
-        net = ConvReluBN(net, 4096, (3, 3), 'conv_conv8', is_training)
-        net = ConvRelu(net, 4096, (3, 3), 'conv_conv9')
+        net = ConvReluBN(net, 4096, (3, 3), 'conv_conv11', is_training)
+        net = ConvRelu(net, 4096, (3, 3), 'conv_conv12')
         net = max_2x1pool(net, 'conv_pool7')
 
-        net = ConvReluBN(net, 4096, (2, 2), 'conv_conv10', is_training, "VALID")
+        net = ConvReluBN(net, 4096, (2, 2), 'conv_conv13', is_training, "VALID")
         net = dropout(net, is_training)
 
         print('CNN outdim before squeeze: {}'.format(net.get_shape()))  # 1x32x100 -> 24x512
