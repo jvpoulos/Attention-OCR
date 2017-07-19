@@ -1,5 +1,3 @@
-__author__ = 'moonkey'
-
 import logging
 import numpy as np
 # from src.data_util.synth_prepare import SynthGen

@@ -24,7 +24,7 @@ class DataGen(object):
         :return:
         """
 
-        img_height = 450
+        img_height = 320
         self.data_root = data_root
         if os.path.exists(annotation_fn):
             self.annotation_path = annotation_fn
