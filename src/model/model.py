@@ -102,7 +102,7 @@ class Model(object):
 
         # variables
         self.img_data = tf.placeholder(tf.float32, shape=(None, 1, 320, None), name='img_data')
-        self.zero_paddings = tf.placeholder(tf.float32, shape=(None, None, 4096), name='zero_paddings')
+        self.zero_paddings = tf.placeholder(tf.float32, shape=(None, None, 2048), name='zero_paddings')
 
         self.decoder_inputs = []
         self.encoder_masks = []
