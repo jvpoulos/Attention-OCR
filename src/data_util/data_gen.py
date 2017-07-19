@@ -24,7 +24,7 @@ class DataGen(object):
         :return:
         """
 
-        img_height = 32
+        img_height = 450
         self.data_root = data_root
         if os.path.exists(annotation_fn):
             self.annotation_path = annotation_fn
@@ -32,17 +32,17 @@ class DataGen(object):
             self.annotation_path = os.path.join(data_root, annotation_fn)
 
         if evaluate:
-            self.bucket_specs = [(int(math.floor(img_width_range[0])), int(math.ceil(img_width_range[1] / 10))),
-                             (int(math.ceil(img_width_range[1] / 9)), int(math.ceil(img_width_range[1] / 8))),
-                             (int(math.ceil(img_width_range[1] / 7)), int(math.ceil(img_width_range[1] / 6))), 
-                             (int(math.ceil(img_width_range[1] / 5)), int(math.ceil(img_width_range[1] / 4))),
-                             (int(math.ceil(img_width_range[1] / 3)), int(math.ceil(img_width_range[1] / 2)))]
+            self.bucket_specs = [(int(math.floor(img_width_range[0])), int(math.ceil(img_width_range[1] / 5))),
+                             # (int(math.ceil(img_width_range[1] / 9)), int(math.ceil(img_width_range[1] / 8))),
+                             # (int(math.ceil(img_width_range[1] / 7)), int(math.ceil(img_width_range[1] / 6))), 
+                             # (int(math.ceil(img_width_range[1] / 5)), int(math.ceil(img_width_range[1] / 4))),
+                             (int(math.ceil(img_width_range[1] / 6)), int(math.ceil(img_width_range[1] / 4)))]
         else:
-            self.bucket_specs = [(int(math.floor(img_width_range[0])), int(math.ceil(img_width_range[1] / 10))),
-                             (int(math.ceil(img_width_range[1] / 9)), int(math.ceil(img_width_range[1] / 8))),
-                             (int(math.ceil(img_width_range[1] / 7)), int(math.ceil(img_width_range[1] / 6))), 
-                             (int(math.ceil(img_width_range[1] / 5)), int(math.ceil(img_width_range[1] / 4))),
-                             (int(math.ceil(img_width_range[1] / 3)), int(math.ceil(img_width_range[1] / 2)))]
+            self.bucket_specs = [(int(math.floor(img_width_range[0])), int(math.ceil(img_width_range[1] / 5))),
+                             # (int(math.ceil(img_width_range[1] / 9)), int(math.ceil(img_width_range[1] / 8))),
+                             # (int(math.ceil(img_width_range[1] / 7)), int(math.ceil(img_width_range[1] / 6))), 
+                             # (int(math.ceil(img_width_range[1] / 5)), int(math.ceil(img_width_range[1] / 4))),
+                             (int(math.ceil(img_width_range[1] / 6)), int(math.ceil(img_width_range[1] / 4)))]
 
         self.bucket_min_width, self.bucket_max_width = img_width_range
         self.image_height = img_height
