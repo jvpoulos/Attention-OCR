@@ -56,7 +56,7 @@ class BucketData(object):
         res['data'] = np.array(self.data_list)
         real_len = max(int(math.floor(self.max_width / 4)) - 1, 0)
         padd_len = int(encoder_input_len) - real_len
-        res['zero_paddings'] = np.zeros([len(self.data_list), padd_len, 4096],
+        res['zero_paddings'] = np.zeros([len(self.data_list), padd_len, 2048],
                                         dtype=np.float32)
         encoder_mask = np.concatenate(
             (np.ones([len(self.data_list), real_len], dtype=np.float32),
