@@ -26,7 +26,7 @@ class ExpConfig:
     INITIAL_LEARNING_RATE = 1.0 # initial learning rate, note the we use AdaDelta, so the initial value doe not matter much
 
     # Network parameters
-    REG_VAL = 0.005 # lambda for L2 regularization losses
+    REG_VAL = 0.01 # lambda for L2 regularization losses
     CLIP_GRADIENTS = True # whether to perform gradient clipping
     MAX_GRADIENT_NORM = 5.0 # Clip gradients to this norm
     TARGET_EMBEDDING_SIZE = 10 # embedding dimension for each target
