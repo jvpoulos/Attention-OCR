@@ -149,11 +149,11 @@ class CNN(object):
         net = ConvRelu(net, 512, (3, 3), 'conv_conv12')
         net = max_2x1pool(net, 'conv_pool7')
 
-        net = ConvReluBN(net, 512, (3, 3), 'conv_conv12', is_training)
-        net = ConvRelu(net, 512, (3, 3), 'conv_conv13')
+        net = ConvReluBN(net, 512, (3, 3), 'conv_conv13', is_training)
+        net = ConvRelu(net, 512, (3, 3), 'conv_conv14')
         net = max_2x1pool(net, 'conv_pool8')
 
-        net = ConvReluBN(net, 512, (2, 2), 'conv_conv14', is_training, "VALID")
+        net = ConvReluBN(net, 512, (2, 2), 'conv_conv15', is_training, "VALID")
         net = dropout(net, is_training)
 
         print('CNN outdim before squeeze: {}'.format(net.get_shape()))  # 1x32x100 -> 24x512
