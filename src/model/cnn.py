@@ -122,6 +122,7 @@ class CNN(object):
         net = tf.transpose(input_tensor, perm=[0, 2, 3, 1])
         net = tf.add(net, (-128.0))
         net = tf.multiply(net, (1/128.0))
+
         net = ConvRelu(net, 64, (3, 3), 'conv_conv1')
         net = max_2x2pool(net, 'conv_pool1')
 
@@ -151,7 +152,10 @@ class CNN(object):
         net = ConvReluBN(net, 512, (3, 3), 'conv_conv13', is_training)
         net = ConvRelu(net, 512, (3, 3), 'conv_conv14')
 
-        net = ConvReluBN(net, 512, (2, 2), 'conv_conv15', is_training, "VALID")
+        net = ConvReluBN(net, 512, (3, 3), 'conv_conv15', is_training)
+        net = ConvRelu(net, 512, (3, 3), 'conv_conv16')
+
+        net = ConvReluBN(net, 512, (2, 2), 'conv_conv17', is_training, "VALID")
         net = max_2x1pool(net, 'conv_pool8')
         net = dropout(net, is_training)
 
