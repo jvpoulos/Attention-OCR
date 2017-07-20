@@ -101,8 +101,8 @@ class Model(object):
             logging.info('use GRU in the decoder.')
 
         # variables
-        self.img_data = tf.placeholder(tf.float32, shape=(None, 1, 320, None), name='img_data')
-        self.zero_paddings = tf.placeholder(tf.float32, shape=(None, None, 640), name='zero_paddings')
+        self.img_data = tf.placeholder(tf.float32, shape=(None, 1, 420, None), name='img_data')
+        self.zero_paddings = tf.placeholder(tf.float32, shape=(None, None, 512), name='zero_paddings')
 
         self.decoder_inputs = []
         self.encoder_masks = []
@@ -444,7 +444,7 @@ class Model(object):
             with open(filename, 'rb') as img_file:
                 img = Image.open(img_file)
                 w, h = img.size
-                h = 320
+                h = 420
                 img = img.resize((real_len, h), Image.ANTIALIAS)
                 if img.mode == '1':
                     img_data = np.asarray(img, dtype=bool)*np.iinfo(np.uint8).max
