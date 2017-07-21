@@ -89,7 +89,7 @@ def ConvReluBN(incoming, num_filters, filter_size, name, is_training, padding_ty
 
         return tf.nn.relu(after_bn)
 
-def dropout(incoming, is_training, keep_prob=0.5):
+def dropout(incoming, is_training, keep_prob=0.3):
     return tf.contrib.layers.dropout(incoming, keep_prob=keep_prob, is_training=is_training)
 
 def tf_create_attention_map(incoming):
@@ -152,10 +152,7 @@ class CNN(object):
         net = ConvReluBN(net, 512, (3, 3), 'conv_conv13', is_training)
         net = ConvRelu(net, 512, (3, 3), 'conv_conv14')
 
-        net = ConvReluBN(net, 512, (3, 3), 'conv_conv15', is_training)
-        net = ConvRelu(net, 512, (3, 3), 'conv_conv16')
-
-        net = ConvReluBN(net, 512, (2, 2), 'conv_conv17', is_training, "VALID")
+        net = ConvReluBN(net, 512, (2, 2), 'conv_conv15', is_training, "VALID")
         net = max_2x1pool(net, 'conv_pool8')
         net = dropout(net, is_training)
 
