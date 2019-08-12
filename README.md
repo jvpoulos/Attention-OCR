@@ -1,9 +1,29 @@
 # Attention-OCR
 
 
-Bidirectional LSTM encoder and attention-enhanced GRU decoder stacked on a multilayer CNN ([WYGIWYS](https://arxiv.org/pdf/1609.04938.pdf)) for image-to-transcription. 
+Bidirectional LSTM encoder and attention-enhanced GRU decoder stacked on a multilayer CNN for image-to-transcription. 
 
-![example image 0](http://cs.cmu.edu/~yuntiand/OCR-2.jpg)
+This repository is associated with the paper ["Character-Based Handwritten Text Transcription with
+Attention Networks"](https://arxiv.org/abs/1712.04046).
+
+Please cite the paper if you use this code for academic research:
+
+```
+@article{DBLP:journals/corr/abs-1712-04046,
+  author    = {Jason Poulos and
+               Rafael Valle},
+  title     = {Character-Based Handwritten Text Transcription with Attention Networks},
+  journal   = {CoRR},
+  volume    = {abs/1712.04046},
+  year      = {2017},
+  url       = {http://arxiv.org/abs/1712.04046},
+  archivePrefix = {arXiv},
+  eprint    = {1712.04046},
+  timestamp = {Mon, 13 Aug 2018 16:47:16 +0200},
+  biburl    = {https://dblp.org/rec/bib/journals/corr/abs-1712-04046},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+```
 
 # Prerequsites
 
