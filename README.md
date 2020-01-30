@@ -9,7 +9,7 @@ Bidirectional LSTM encoder and attention-enhanced GRU decoder stacked on a multi
 
 ### Python 3 (tested on Python 3.5.2)
 
-### Tensorflow 1.0
+### Tensorflow 1.2
 
 ### Distance (Required to calculate CER):
 

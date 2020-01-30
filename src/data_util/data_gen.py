@@ -16,8 +16,12 @@ class DataGen(object):
                  data_root, annotation_fn,
                  evaluate = False,
                  valid_target_len = float('inf'),
-                 img_width_range = (170, 1016), # iam training width range
-                 word_len = 81): # iam training max
+                 img_width_range = (83, 2083), # iamdb
+                 word_len = 93): 
+                 # img_width_range = (354, 1990), # sgdb
+                 # word_len = 129): # sgdb
+                 # img_width_range = (175, 1801), # gwdb
+                 # word_len = 98): # gwdb
         """
         :param data_root:
         :param annotation_fn:
@@ -34,11 +38,11 @@ class DataGen(object):
             self.annotation_path = os.path.join(data_root, annotation_fn)
 
         if evaluate:
-            self.bucket_specs = [(int(math.floor(img_width_range[0])), int(95 + 2)), # iam test max
-                             (int(math.ceil(img_width_range[1] / 5)), int(95 + 2)),
-                             (int(math.ceil(img_width_range[1] / 4)), int(95 + 2)), 
-                             (int(math.ceil(img_width_range[1] / 3)), int(95 + 2)),
-                             (int(math.ceil(img_width_range[1] / 2)), int(95 + 2))]
+            self.bucket_specs = [(int(math.floor(img_width_range[0])), int(word_len + 2)),
+                             (int(math.ceil(img_width_range[1] / 5)), int(word_len + 2)),
+                             (int(math.ceil(img_width_range[1] / 4)), int(word_len + 2)), 
+                             (int(math.ceil(img_width_range[1] / 3)), int(word_len + 2)),
+                             (int(math.ceil(img_width_range[1] / 2)), int(word_len + 2))]
         else:
             self.bucket_specs = [(int(math.floor(img_width_range[0])), int(word_len + 2)),
                              (int(math.ceil(img_width_range[1] / 5)), int(word_len + 2)),
