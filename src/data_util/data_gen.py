@@ -17,7 +17,7 @@ class DataGen(object):
                  evaluate = False,
                  valid_target_len = float('inf'),
                  img_width_range = (83, 2083), # iamdb
-                 word_len = 93): 
+                 word_len = 91): 
                  # img_width_range = (354, 1990), # sgdb
                  # word_len = 129): # sgdb
                  # img_width_range = (175, 1801), # gwdb
@@ -39,16 +39,16 @@ class DataGen(object):
 
         if evaluate:
             self.bucket_specs = [(int(math.floor(img_width_range[0])), int(word_len + 2)),
-                             (int(math.ceil(img_width_range[1] / 5)), int(word_len + 2)),
-                             (int(math.ceil(img_width_range[1] / 4)), int(word_len + 2)), 
-                             (int(math.ceil(img_width_range[1] / 3)), int(word_len + 2)),
-                             (int(math.ceil(img_width_range[1] / 2)), int(word_len + 2))]
+                             (int(word_len + 2), int(math.ceil(img_width_range[0] ))),
+                             (int(math.ceil(img_width_range[0] )), int(math.ceil(img_width_range[1] / 5))), 
+                             (int(math.ceil(img_width_range[1] / 5)), int(math.ceil(img_width_range[1] / 3))), 
+                            (int(math.ceil(img_width_range[1] / 3)), int(math.ceil(img_width_range[1])))] 
         else:
             self.bucket_specs = [(int(math.floor(img_width_range[0])), int(word_len + 2)),
-                             (int(math.ceil(img_width_range[1] / 5)), int(word_len + 2)),
-                             (int(math.ceil(img_width_range[1] / 4)), int(word_len + 2)), 
-                             (int(math.ceil(img_width_range[1] / 3)), int(word_len + 2)),
-                             (int(math.ceil(img_width_range[1] / 2)), int(word_len + 2))]
+                             (int(word_len + 2), int(math.ceil(img_width_range[0] ))),
+                             (int(math.ceil(img_width_range[0] )), int(math.ceil(img_width_range[1] / 5))), 
+                             (int(math.ceil(img_width_range[1] / 5)), int(math.ceil(img_width_range[1] / 3))), 
+                            (int(math.ceil(img_width_range[1] / 3)), int(math.ceil(img_width_range[1])))] 
 
         self.bucket_min_width, self.bucket_max_width = img_width_range
         self.image_height = img_height

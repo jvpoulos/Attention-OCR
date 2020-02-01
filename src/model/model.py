@@ -26,12 +26,6 @@ try:
 except ImportError:
     distance_loaded = False
 
-# Select gpu
-import os
-gpu = 0
-os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   # see issue #152
-os.environ["CUDA_VISIBLE_DEVICES"]= "{}".format(gpu)
-
 class Model(object):
 
     def __init__(self,
@@ -60,7 +54,13 @@ class Model(object):
                  evaluate=False,
                  valid_target_length=float('inf')):
 
-        gpu_device_id = '/gpu:' + str(gpu_id)
+    	# Support two GPUs
+        gpu_device_id_1 = '/gpu:' + str(gpu_id)
+        gpu_device_id_2 = '/gpu:' + str(gpu_id)
+        if gpu_id == 2:
+        	gpu_device_id_1 = '/gpu:' + str(gpu_id-1)
+        	gpu_device_id_2 = '/gpu:' + str(gpu_id-2)
+
         if not os.path.exists(model_dir):
             os.makedirs(model_dir)
         logging.info('loading data')
@@ -139,14 +139,15 @@ class Model(object):
         else:
             assert False, phase
 
-        with tf.device(gpu_device_id):
-            cnn_model = CNN(self.img_data, True) #(not self.forward_only))
+        with tf.device(gpu_device_id_1):
+            # cnn_model = CNN(self.img_data, True) #(not self.forward_only))
+            cnn_model = CNN(self.img_data, not self.forward_only)
             self.conv_output = cnn_model.tf_output()
             self.concat_conv_output = tf.concat(axis=1, values=[self.conv_output, self.zero_paddings])
 
             self.perm_conv_output = tf.transpose(self.concat_conv_output, perm=[1, 0, 2])
 
-        with tf.device(gpu_device_id):
+        with tf.device(gpu_device_id_2):
             self.attention_decoder_model = Seq2SeqModel(
                 encoder_masks = self.encoder_masks,
                 encoder_inputs_tensor = self.perm_conv_output,
@@ -168,7 +169,7 @@ class Model(object):
 
             self.updates = []
             self.summaries_by_bucket = []
-            with tf.device(gpu_device_id):
+            with tf.device(gpu_device_id_2):
                 params = tf.trainable_variables()
                 # Gradients and SGD update operation for training the model.
                 opt = tf.train.AdadeltaOptimizer(learning_rate=initial_learning_rate)
