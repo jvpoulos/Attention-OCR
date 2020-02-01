@@ -116,7 +116,7 @@ class Model(object):
             self.target_weights.append(tf.placeholder(tf.float32, shape=[None],
                                                     name="weight{0}".format(i)))
 
-        self.reg_val = reg_val
+        self.reg_val = int.(reg_val)
         self.sess = session
         self.evaluate = evaluate
         self.steps_per_checkpoint = steps_per_checkpoint
