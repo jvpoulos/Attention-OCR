@@ -7,11 +7,15 @@ Default paramters for experiemnt
 
 class ExpConfig:
 
+    # Control
     GPU_ID = 0
-    # phase
     PHASE = 'test'
     VISUALIZE = True
 
+    LOAD_MODEL = False
+    OLD_MODEL_VERSION = False
+    TARGET_VOCAB_SIZE = 26+10+3 # 0: PADDING, 1: GO, 2: EOS, >2: 0-9, a-z
+    
     # input and output
     DATA_BASE_DIR = '/mnt/90kDICT32px'
     DATA_PATH = '/mnt/train_shuffled_words.txt' # path containing data file names and labels. Format:
@@ -26,16 +30,12 @@ class ExpConfig:
     INITIAL_LEARNING_RATE = 1.0 # initial learning rate, note the we use AdaDelta, so the initial value doe not matter much
 
     # Network parameters
-    REG_VAL = 0.005 # lambda for L2 regularization losses
+    REG_VAL = 0 # lambda for L2 regularization losses
     CLIP_GRADIENTS = True # whether to perform gradient clipping
     MAX_GRADIENT_NORM = 5.0 # Clip gradients to this norm
     TARGET_EMBEDDING_SIZE = 10 # embedding dimension for each target
     OPT_ATTN = 'softmax' # which attention mechanism to use: 'softmax' (default); 'log_softmax'; 'sigmoid'; 'no_attn'
-    ATTN_USE_LSTM = True # whether or not use LSTM attention decoder cell
+    USE_GRUE = True # use GRU rather than LSTM for decoder
     ATTN_NUM_HIDDEN=128 # number of hidden units in attention decoder cell
     ATTN_NUM_LAYERS = 2 # number of layers in attention decoder cell
                         # (Encoder number of hidden units will be ATTN_NUM_HIDDEN*ATTN_NUM_LAYERS)
-    LOAD_MODEL = False
-    OLD_MODEL_VERSION = False
-    TARGET_VOCAB_SIZE = 26+10+3 # 0: PADDING, 1: GO, 2: EOS, >2: 0-9, a-z
-
