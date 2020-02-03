@@ -255,7 +255,6 @@ class Model(object):
                 step_outputs = [b for b in np.array([np.argmax(logit, axis=1).tolist() for logit in step_logits]).transpose()]
                 if self.visualize:
                     step_attns = np.array([[a.tolist() for a in step_attn] for step_attn in step_attns]).transpose([1, 0, 2])
-                    #print (step_attns)
 
                 for idx, output, ground in zip(range(len(grounds)), step_outputs, grounds):
                     flag_ground,flag_out = True, True
@@ -278,7 +277,7 @@ class Model(object):
                         if self.visualize:
                             self.visualize_attention(file_list[idx], step_attns[idx], output_valid, ground_valid, num_incorrect>0, real_len)
                         num_incorrect = float(num_incorrect) / len(ground_valid)
-                        num_incorrect = min(1.0, num_incorrect)
+                        # num_incorrect = min(1.0, num_incorrect)
                     else:
                         if output_valid == ground_valid:
                             num_incorrect = 0
@@ -287,7 +286,8 @@ class Model(object):
                         if self.visualize:
                             self.visualize_attention(file_list[idx], step_attns[idx], output_valid, ground_valid, num_incorrect>0, real_len)
                     num_correct += 1. - num_incorrect
-                logging.info('%f out of %d correct' %(num_correct, num_total))
+                    cer += num_incorrect
+                logging.info('%f out of %d correct. CER: %f' %(num_correct, num_total, cer))
         elif self.phase == 'train':
             total = (self.s_gen.get_size() // self.batch_size)
             with tqdm(desc='Train: ', total=total) as pbar:
