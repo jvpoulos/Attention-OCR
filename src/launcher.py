@@ -102,6 +102,11 @@ def process_args(args, defaults):
                         help=('Clip gradients to this norm.'
                               ', default=%s'
                               % (defaults.MAX_GRADIENT_NORM)))
+    parser.add_argument('--augmentation', dest='augmentation',
+                        help=('P(image augmentation).'
+                              ', default=%s'
+                              % (defaults.AUGMENTATION)))
+    parser.set_defaults(augmentation=defaults.AUGMENTATION)
     parser.add_argument('--opt-attn', dest="opt_attn",
                         type=str, default=defaults.OPT_ATTN,
                         choices=['softmax','log_softmax', 'sigmoid', 'no_attn'],
@@ -152,6 +157,7 @@ def main(args, defaults):
                 valid_target_length = float('inf'),
                 gpu_id=parameters.gpu_id,
                 use_gru=parameters.use_gru,
+                augmentation=parameters.augmentation,
                 session = sess)
         model.launch()
 

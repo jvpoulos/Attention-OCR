@@ -20,6 +20,8 @@ from .seq2seq_model import Seq2SeqModel
 from data_util.data_gen import DataGen
 from tqdm import tqdm
 
+from imgaug import augmenters as iaa
+
 try:
     import distance
     distance_loaded = True
@@ -51,6 +53,7 @@ class Model(object):
                  gpu_id,
                  use_gru,
                  reg_val,
+                 augmentation,
                  evaluate=False,
                  valid_target_length=float('inf')):
 
@@ -93,6 +96,7 @@ class Model(object):
         logging.info('attn_num_hidden: %d' % attn_num_hidden)
         logging.info('attn_num_layers: %d' % attn_num_layers)
         logging.info('visualize: %s' % visualize)
+        logging.info('P(data augmentation): %s' % augmentation)
 
         buckets = self.s_gen.bucket_specs
         logging.info('buckets')
@@ -131,6 +135,7 @@ class Model(object):
         self.visualize = visualize
         self.learning_rate = initial_learning_rate
         self.clip_gradients = clip_gradients
+        self.augmentation = augmentation
 
         if phase == 'train':
             self.forward_only = False
@@ -140,8 +145,7 @@ class Model(object):
             assert False, phase
 
         with tf.device(gpu_device_id_1):
-            # cnn_model = CNN(self.img_data, True) #(not self.forward_only))
-            cnn_model = CNN(self.img_data, not self.forward_only)
+            cnn_model = CNN(self.img_data, True) #(not self.forward_only))
             self.conv_output = cnn_model.tf_output()
             self.concat_conv_output = tf.concat(axis=1, values=[self.conv_output, self.zero_paddings])
 
@@ -233,6 +237,8 @@ class Model(object):
                 logging.info('Compare word based on edit distance.')
             num_correct = 0
             num_total = 0
+            lev_distance = 0
+            ground_length = 0
             for batch in self.s_gen.gen(self.batch_size):
                 # Get a batch and make a step.
                 start_time = time.time()
@@ -273,11 +279,11 @@ class Model(object):
                         else:
                             flag_out = False
                     if distance_loaded:
-                        num_incorrect = distance.levenshtein(output_valid, ground_valid)
+                        lev = distance.levenshtein(output_valid, ground_valid)
                         if self.visualize:
-                            self.visualize_attention(file_list[idx], step_attns[idx], output_valid, ground_valid, num_incorrect>0, real_len)
-                        num_incorrect = float(num_incorrect) / len(ground_valid)
-                        # num_incorrect = min(1.0, num_incorrect)
+                            self.visualize_attention(file_list[idx], step_attns[idx], output_valid, ground_valid, lev>0, real_len)
+                        num_incorrect = float(lev) / len(ground_valid)
+                        num_incorrect = min(1.0, num_incorrect)
                     else:
                         if output_valid == ground_valid:
                             num_incorrect = 0
@@ -286,11 +292,21 @@ class Model(object):
                         if self.visualize:
                             self.visualize_attention(file_list[idx], step_attns[idx], output_valid, ground_valid, num_incorrect>0, real_len)
                     num_correct += 1. - num_incorrect
-                    cer += num_incorrect
-                logging.info('%f out of %d correct. CER: %f' %(num_correct, num_total, cer))
+                    lev_distance += lev
+                    ground_length += len(ground_valid)
+                logging.info('%f out of %d correct' %(num_correct, num_total))
+                logging.info('Distance: %f, sum ground truth length: %d' %(lev_distance, ground_valid))
         elif self.phase == 'train':
             total = (self.s_gen.get_size() // self.batch_size)
             with tqdm(desc='Train: ', total=total) as pbar:
+                st = lambda aug: iaa.Sometimes(self.augmentation, aug)
+                seq = iaa.Sequential([
+                    st(iaa.Affine(scale={"x": (0.8, 1.2), "y": (0.8, 1.2)}, # scale images to 80-120% of their size, individually per axis
+                                  translate_px={"x": (-16, 16), "y": (-16, 16)}, # translate by -16 to +16 pixels (per axis)
+                                  rotate=(-45, 45), # rotate by -45 to +45 degrees
+                                  shear=(-16, 16), # shear by -16 to +16 degrees
+                    ))
+                ])
                 for epoch in range(self.num_epoch):
 
                    logging.info('Generating first batch')
@@ -302,6 +318,9 @@ class Model(object):
                         batch_len = batch['real_len']
                         bucket_id = batch['bucket_id']
                         img_data = batch['data']
+                        img_data = seq.augment_images(
+                        img_data.transpose(0, 2, 3, 1))
+                        img_data = img_data.transpose(0, 3, 1, 2)
                         zero_paddings = batch['zero_paddings']
                         decoder_inputs = batch['decoder_inputs']
                         target_weights = batch['target_weights']
