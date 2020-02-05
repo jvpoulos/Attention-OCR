@@ -63,7 +63,7 @@ Also create file `lines_val.txt` from `htr/lang/word/va.txt` following the same 
 Note: We assume that the working directory is `Attention-OCR`. The directory structure within `Attention-OCR` should be:
 
 - `iamdb`
-  - `imgs_proc`
+  - `imgs_proc` (folder of JPEG images)
   - `lines_train.txt`
   - `lines_val.txt`
   - `lines_test.txt`

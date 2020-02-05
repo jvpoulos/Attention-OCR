@@ -31,11 +31,11 @@ class DataGen(object):
             img_width_range = (135, 2358), # rimes
             word_len = 110
 
-        if data_root=="sgbd"
+        if data_root=="sgbd":
             img_width_range = (354, 1990), # sgdb
             word_len = 129  # sgdb
 
-        if data_root="gwdb"
+        if data_root="gwdb":
             img_width_range = (175, 1801), # gwdb
             word_len = 98 # gwdb
 
