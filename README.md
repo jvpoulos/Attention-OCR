@@ -37,7 +37,7 @@ IAM image and transcription preprocessing from [Laia](https://github.com/jpuigce
 
 ### Tensorflow 1.14
 
-### Required packages: {distance, ipdb, tqdm, pillow, matplotlib}:
+### Required packages: {distance, ipdb, tqdm, pillow, matplotlib, imgaug}:
 
 ```
 pip3 install {package}
@@ -186,7 +186,7 @@ Default parameters set in the file `src/exp_config.py`.
 - Control
     * `GPU-ID`: ID number of the GPU. Set to 2 if using 2 GPUs. Default is 0. 
     * `phase`: Determine whether to 'train' or 'test'. Default is 'test'.
-    * `visualize`: Valid if `phase` is set to test. Output the attention maps on the original image.
+    * `visualize`: Valid if `phase` is set to test. Output the attention maps on the original image. Set flag to `no-visualize` to test without visualizing. 
     * `load-model`: Load model from `model-dir` or not.
     * `target-vocab-size`: Target vocabulary size. Default is = 26+10+3 # 0: PADDING, 1: GO, 2: EOS, >2: 0-9, a-z
 
@@ -197,6 +197,7 @@ Default parameters set in the file `src/exp_config.py`.
     * `log-path`: The path to put log. Default is 'log.txt'
     * `output-dir`: The path to put visualization results if `visualize` is set to True. Default is 'results'.
     * `steps-per-checkpoint`: Checkpointing (print perplexity, save model) per how many steps. Default is 500. 
+    * `augmentation`: P(data augmentation). Default is 0.2. 
 
 - Optimization
     * `num-epoch`: The number of whole data passes. Default is 1000. 

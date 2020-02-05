@@ -238,7 +238,6 @@ class Model(object):
             num_correct = 0
             num_total = 0
             lev_distance = 0
-            ground_length = 0
             for batch in self.s_gen.gen(self.batch_size):
                 # Get a batch and make a step.
                 start_time = time.time()
@@ -293,9 +292,8 @@ class Model(object):
                             self.visualize_attention(file_list[idx], step_attns[idx], output_valid, ground_valid, num_incorrect>0, real_len)
                     num_correct += 1. - num_incorrect
                     lev_distance += lev
-                    ground_length += len(ground_valid)
                 logging.info('%f out of %d correct' %(num_correct, num_total))
-                logging.info('Distance: %f, sum ground truth length: %d' %(lev_distance, ground_valid))
+                logging.info('Distance: %f' %(lev_distance))
         elif self.phase == 'train':
             total = (self.s_gen.get_size() // self.batch_size)
             with tqdm(desc='Train: ', total=total) as pbar:
