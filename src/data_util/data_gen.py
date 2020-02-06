@@ -151,7 +151,7 @@ class DataGen(object):
 
         word = [self.GO]
         for c in lex:
-            assert 32 < ord(c) < 126 or 191 < ord(c) < 252 or 8363 < ord(c) <8365
+            assert 32 < ord(c) < 126 or 191 < ord(c) < 252
             word.append(
                 ord(c)+3-33 if ord(c) < 126 else ord(c)-192+3+33
             )
