@@ -153,12 +153,7 @@ class DataGen(object):
         for c in lex:
             assert 32 < ord(c) < 126 or 191 < ord(c) < 252 or 8363 < ord(c) <8365
             word.append(
-                if ord(c) < 126:
-                    ord(c)+3-33
-                if 191 < ord(c) < 252:
-                    ord(c)-192+3+33 
-                else
-                    ord(c)-8364+3+33+192 
+                ord(c)+3-33 if ord(c) < 126 else ord(c)-192+3+33
             )
         word.append(self.EOS)
         word = np.array(word, dtype=np.int32)
