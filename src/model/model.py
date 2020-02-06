@@ -6,6 +6,7 @@ from __future__ import print_function
 
 import random, time, os, shutil, math, sys, logging, ipdb
 import numpy as np
+np.random.bit_generator = numpy.random._bit_generator
 from six.moves import xrange  # pylint: disable=redefined-builtin
 from PIL import Image
 import tensorflow as tf
