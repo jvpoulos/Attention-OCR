@@ -12,13 +12,21 @@ class DataGen(object):
     GO = 1
     EOS = 2
 
-    def __init__(self,
-                 data_root, annotation_fn,
-                 evaluate = False,
-                 valid_target_len = float('inf'),
-                 img_width_range = (83, 2083), # iamdb
-                 word_len = 91): 
+    if data_root=='iamdb':
+    	def __init__(self,
+    		data_root, annotation_fn,
+    		evaluate = False,
+    		valid_target_len = float('inf'),
+    		img_width_range = (83, 2083), # iamdb
+            word_len = 91): 
 
+    	if data_root=='rimes':
+    		def __init__(self,
+    			data_root, annotation_fn,
+    			evaluate = False,
+    			valid_target_len = float('inf'),
+	            img_width_range = (135,2358), # iamdb
+	            word_len = 110): 
         """
         :param data_root:
         :param annotation_fn:
@@ -26,18 +34,6 @@ class DataGen(object):
         :param img_width_range: only needed for training set
         :return:
         """
-
-        if data_root=='rimes':
-            img_width_range = (135, 2358), # rimes
-            word_len = 110
-
-        if data_root=="sgbd":
-            img_width_range = (354, 1990), # sgdb
-            word_len = 129  # sgdb
-
-        if data_root=="gwdb":
-            img_width_range = (175, 1801), # gwdb
-            word_len = 98 # gwdb
 
         img_height = 32
         self.data_root = data_root

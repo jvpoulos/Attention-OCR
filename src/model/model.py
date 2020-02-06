@@ -237,7 +237,8 @@ class Model(object):
                 logging.info('Compare word based on edit distance.')
             num_correct = 0
             num_total = 0
-            lev_distance = 0
+            numerator = 0
+            denominator = 0
             for batch in self.s_gen.gen(self.batch_size):
                 # Get a batch and make a step.
                 start_time = time.time()
@@ -283,6 +284,7 @@ class Model(object):
                             self.visualize_attention(file_list[idx], step_attns[idx], output_valid, ground_valid, lev>0, real_len)
                         num_incorrect = float(lev) / len(ground_valid)
                         num_incorrect = min(1.0, num_incorrect)
+                        nchar = len(ground_valid)
                     else:
                         if output_valid == ground_valid:
                             num_incorrect = 0
@@ -291,9 +293,10 @@ class Model(object):
                         if self.visualize:
                             self.visualize_attention(file_list[idx], step_attns[idx], output_valid, ground_valid, num_incorrect>0, real_len)
                     num_correct += 1. - num_incorrect
-                    lev_distance += lev
+                    numerator += lev
+                    denominator += nchar
                 logging.info('%f out of %d correct' %(num_correct, num_total))
-                logging.info('Distance: %f' %(lev_distance))
+                logging.info('Lev: %f, length of test set: %f' %(numerator, denominator))
         elif self.phase == 'train':
             total = (self.s_gen.get_size() // self.batch_size)
             with tqdm(desc='Train: ', total=total) as pbar:
