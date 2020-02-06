@@ -12,21 +12,15 @@ class DataGen(object):
     GO = 1
     EOS = 2
 
-    if data_root=='iamdb':
-    	def __init__(self,
-    		data_root, annotation_fn,
-    		evaluate = False,
-    		valid_target_len = float('inf'),
-    		img_width_range = (83, 2083), # iamdb
-            word_len = 91): 
-
-    if data_root=='rimes':
-        def __init__(self,
-    		data_root, annotation_fn,
-    		evaluate = False,
-    		valid_target_len = float('inf'),
-            img_width_range = (135,2358), # iamdb
+    def __init__(self,
+            data_root, annotation_fn,
+            evaluate = False,
+            valid_target_len = float('inf'),
+            img_width_range = (135,2358), # rimes
             word_len = 110): 
+    		# img_width_range = (83, 2083), # iamdb
+      #       word_len = 91): 
+       
         """
         :param data_root:
         :param annotation_fn:
