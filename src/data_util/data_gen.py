@@ -121,9 +121,7 @@ class DataGen(object):
             img_bw = img_bw[np.newaxis, :]
 
 
-
-        # € : 8364 # end RIMES
-        # û: 251
+        # û: 251 # end RIMES
         # ....
         # À: 192
         # ' }':125
@@ -153,7 +151,7 @@ class DataGen(object):
         for c in lex:
             assert 32 < ord(c) < 126 or 191 < ord(c) < 252
             word.append(
-                ord(c)+3-33 if ord(c) < 126 else ord(c)-192+3+33
+                ord(c)+3-33 if ord(c) < 126 else ord(c)-192+96
             )
         word.append(self.EOS)
         word = np.array(word, dtype=np.int32)
