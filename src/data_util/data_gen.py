@@ -120,7 +120,14 @@ class DataGen(object):
             img_bw = np.asarray(img_bw, dtype=np.uint8)
             img_bw = img_bw[np.newaxis, :]
 
-        # '|':124
+
+
+        # € : 8364 # end RIMES
+        # û: 251
+        # ....
+        # À: 192
+        # ' }':125
+        # '|':124 # end IAMDB
         # 'a':97, 'z':122
         # '_':95
         # 'A':65, 'Z':90
@@ -138,15 +145,20 @@ class DataGen(object):
         #"(":40, "(":41
         #"'":39
         #"&":38
-        #"!":33
+        #"!":33 # start IAMDB/RIMES
 
         # 0: PADDING, 1: GO, 2: EOS, 3: UNK
 
         word = [self.GO]
         for c in lex:
-            assert 32 < ord(c) < 125
+            assert 32 < ord(c) < 126 or 191 < ord(c) < 252 or 8363 < ord(c) <8365
             word.append(
-                ord(c)+3-33
+                if ord(c) < 126:
+                    ord(c)+3-33
+                if 191 < ord(c) < 252:
+                    ord(c)-192+3+33 
+                else
+                    ord(c)-8364+3+33+192 
             )
         word.append(self.EOS)
         word = np.array(word, dtype=np.int32)
