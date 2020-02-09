@@ -1,5 +1,6 @@
 __author__ = 'moonkey'
 
+import io
 import os
 import numpy as np
 from PIL import Image
@@ -10,7 +11,7 @@ from data_util.bucketdata import BucketData
 
 SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_LABEL_FILE = os.path.join(SCRIPT_PATH,
-'../iamdb-target-vocab.txt')
+'../target-vocab.txt')
 
 class DataGen(object):
     GO = 1
@@ -23,7 +24,7 @@ class DataGen(object):
     		img_width_range = (83, 2083), # iamdb train set
             word_len = 81): 
         # img_width_range = (135,2358), # rimes
-        #     word_len = 110): 
+        #     word_len = 100): 
        
         """
         :param data_root:

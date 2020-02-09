@@ -1,5 +1,6 @@
 __author__ = 'moonkey'
 
+import io
 import os
 import numpy as np
 from PIL import Image
@@ -11,7 +12,7 @@ import math
 
 SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_LABEL_FILE = os.path.join(SCRIPT_PATH,
-                                  '../iamdb-target-vocab.txt')
+                                  '../target-vocab.txt')
 
 class BucketData(object):
     def __init__(self):

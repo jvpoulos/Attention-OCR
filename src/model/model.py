@@ -31,7 +31,7 @@ except ImportError:
 
 SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_LABEL_FILE = os.path.join(SCRIPT_PATH,
-                                  '../iamdb-target-vocab.txt')
+                                  '../target-vocab.txt')
 
 class Model(object):
 
