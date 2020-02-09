@@ -90,8 +90,8 @@ class Model(object):
         logging.info('steps_per_checkpoint: %d' % (steps_per_checkpoint))
         logging.info('batch_size: %d' %(batch_size))
         logging.info('num_epoch: %d' %num_epoch)
-        logging.info('learning_rate: %d' % initial_learning_rate)
-        logging.info('reg_val: %d' % reg_val)
+        logging.info('learning_rate: %s' % initial_learning_rate)
+        logging.info('reg_val: %s' % reg_val)
         logging.info('max_gradient_norm: %f' % max_gradient_norm)
         logging.info('opt_attn: %s' % opt_attn)
         logging.info('clip_gradients: %s' % clip_gradients)
@@ -150,7 +150,8 @@ class Model(object):
             assert False, phase
 
         with tf.device(gpu_device_id_1):
-            cnn_model = CNN(self.img_data, True) #(not self.forward_only))
+            # cnn_model = CNN(self.img_data, True) #(not self.forward_only))
+            cnn_model = CNN(self.img_data, not self.forward_only)
             self.conv_output = cnn_model.tf_output()
             self.concat_conv_output = tf.concat(axis=1, values=[self.conv_output, self.zero_paddings])
 
