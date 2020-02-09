@@ -8,7 +8,7 @@ import pickle as cPickle
 import random, math
 from data_util.bucketdata import BucketData
 
-SCRIPT_PATH = os.path.dirname(os.path.abspath(file))
+SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_LABEL_FILE = os.path.join(SCRIPT_PATH,
 '../iamdb-target-vocab.txt')
 
