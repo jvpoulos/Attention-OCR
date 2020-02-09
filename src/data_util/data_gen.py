@@ -8,6 +8,10 @@ import pickle as cPickle
 import random, math
 from data_util.bucketdata import BucketData
 
+SCRIPT_PATH = os.path.dirname(os.path.abspath(file))
+DEFAULT_LABEL_FILE = os.path.join(SCRIPT_PATH,
+'../iamdb-target-vocab.txt')
+
 class DataGen(object):
     GO = 1
     EOS = 2
@@ -16,8 +20,8 @@ class DataGen(object):
             data_root, annotation_fn,
             evaluate = False,
             valid_target_len = float('inf'),
-    		 img_width_range = (83, 2083), # iamdb
-             word_len = 91): 
+    		img_width_range = (83, 2083), # iamdb train set
+            word_len = 81): 
         # img_width_range = (135,2358), # rimes
         #     word_len = 110): 
        
@@ -148,16 +152,35 @@ class DataGen(object):
         # 0: PADDING, 1: GO, 2: EOS, 3: UNK
 
         word = [self.GO]
+
+        try:
+            fp=open('outputs.txt', 'w+', encoding='utf-8')
+        except:
+            print('could not open file'+outputs.txt)
+            quit()     
+        # for c in lex:
+        #     assert 32 < ord(c) < 126 or 191 < ord(c) < 252
+        #     if ord(c)==33:
+        #         word.append(ord(c)-33) # 0
+        #     if 37 < ord(c) < 61:
+        #         word.append(ord(c)-38+1) # 1 to 23
+        #     if 61 < ord(c) < 64:
+        #         word.append(ord(c)-38) # 24 to 25
+        # word.append(self.EOS)
+        # word = np.array(word, dtype=np.int32)
+        label_file = DEFAULT_LABEL_FILE
+        with io.open(label_file, 'r', encoding='utf-8') as f:
+           labels = f.read().splitlines()
+
         for c in lex:
-            assert 32 < ord(c) < 126 or 191 < ord(c) < 252
-            word.append(
-                ord(c)+3-33 if ord(c) < 126 else ord(c)-192+96
-            )
+            print('c ord(c)', c, ord(c))
+            for i, l in enumerate(labels):
+                if c== l:
+                   n=i+3
+                   print('data gen c ord(c) l i n : ', c, ord(c), l, i, n)
+                   word.append(n)
+
         word.append(self.EOS)
-        word = np.array(word, dtype=np.int32)
-        # word = np.array( [self.GO] +
-        # [ord(c) - 97 + 13 if ord(c) > 96 else ord(c) - 48 + 3
-        # for c in lex] + [self.EOS], dtype=np.int32)
 
         return img_bw, word
 

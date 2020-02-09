@@ -29,6 +29,10 @@ try:
 except ImportError:
     distance_loaded = False
 
+SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
+DEFAULT_LABEL_FILE = os.path.join(SCRIPT_PATH,
+                                  '../iamdb-target-vocab.txt')
+
 class Model(object):
 
     def __init__(self,
@@ -458,11 +462,33 @@ class Model(object):
         output_dir = os.path.join(output_dir, filename.replace('/', '_'))
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
-        with open(os.path.join(output_dir, 'word.txt'), 'w') as fword:
-            gt = ''.join([chr(c-3+33) for c in ground_valid])
-            ot = ''.join([chr(c-3+33) for c in output_valid])
-            fword.write(gt+'\n')
-            fword.write(ot)
+        # with open(os.path.join(output_dir, 'word.txt'), 'w') as fword:
+        #     gt = ''.join([chr(c-13+97) if c-13+97>96 else chr(c-3+48) for c in ground_valid])
+        #     ot = ''.join([chr(c-13+97) if c-13+97>96 else chr(c-3+48) for c in output_valid])
+        #     fword.write(gt+'\n')
+        #     fword.write(ot)
+        label_file = DEFAULT_LABEL_FILE
+        with io.open(label_file, 'r', encoding='utf-8') as f:
+           labels = f.read().splitlines()
+        labels_list = enumerate(labels)
+        with open(os.path.join(output_dir, 'word.txt'), 'w', encoding='utf8') as fword:
+            gv=ground_valid
+            for i, c in enumerate(ground_valid):
+                for j, l in enumerate(labels):
+                   if (c-3)== j:
+                       gv[i]=l
+
+            print('aaa ground valid', gv, ground_valid)
+            fword.write(' '.join(gv))
+
+            ov=output_valid
+            for i, c in enumerate(output_valid):
+                for j, l in enumerate(labels):
+                   if (c-3)== j:
+                       ov[i]=l
+
+            fword.write(' '.join(ov))
+
             with open(filename, 'rb') as img_file:
                 img = Image.open(img_file)
                 w, h = img.size
@@ -500,8 +526,8 @@ class Model(object):
                     img_out = Image.fromarray(img_out_data.astype(np.uint8))
                     img_out.save(output_filename)
 
-                # plot ~ 5% of the time
-                if np.random.random() < 0.05:
+                # plot ~ 2% of the time
+                if np.random.random() < 0.02:
                     fig = plt.figure(figsize=(2, 6))
                     gs = matplotlib.gridspec.GridSpec(
                         2, 1, height_ratios=[len(ot)*2, 1],

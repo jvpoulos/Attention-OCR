@@ -93,7 +93,7 @@ def process_args(args, defaults):
                         help=('Output directory, default=%s'
                             %(defaults.OUTPUT_DIR)))
     parser.add_argument('--reg-val', dest="reg_val",
-                        type=int, default=defaults.REG_VAL,
+                        type=float, default=defaults.REG_VAL,
                         help=('Use L2 regularization losses.'
                               ', default=%s'
                               % (defaults.REG_VAL)))
@@ -103,6 +103,7 @@ def process_args(args, defaults):
                               ', default=%s'
                               % (defaults.MAX_GRADIENT_NORM)))
     parser.add_argument('--augmentation', dest='augmentation',
+                        type=float, default=defaults.AUGMENTATION, 
                         help=('P(image augmentation).'
                               ', default=%s'
                               % (defaults.AUGMENTATION)))
