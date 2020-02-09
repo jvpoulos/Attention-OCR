@@ -68,13 +68,12 @@ from tensorflow.python.ops import control_flow_ops
 from tensorflow.python.ops import embedding_ops
 from tensorflow.python.ops import math_ops
 from tensorflow.python.ops import nn_ops
-from tensorflow.python.ops import rnn
-from tensorflow.contrib.rnn.python.ops import rnn_cell
+from tensorflow.contrib.rnn.python.ops import rnn, rnn_cell
 from tensorflow.python.ops import variable_scope
 from tensorflow.python.ops import rnn_cell_impl
 from tensorflow.python.ops import rnn_cell_impl
 from tensorflow.contrib.rnn.python.ops import core_rnn_cell
-linear = core_rnn_cell._linear
+linear = core_rnn_cell._linear # pylint: disable=protected-access
 
 def _extract_argmax_and_embed(embedding, output_projection=None,
                               update_embedding=True):
@@ -908,7 +907,7 @@ def sequence_loss_by_example(logits, targets, weights,
         crossent = nn_ops.sparse_softmax_cross_entropy_with_logits(
           logits = logit, labels=target)
       else:
-        crossent = softmax_loss_function(logit, target)
+        crossent = softmax_loss_function(logits=logit, labels=target)
       log_perp_list.append(crossent * weight)
     log_perps = math_ops.add_n(log_perp_list)
     if average_across_timesteps:
@@ -1002,7 +1001,7 @@ def model_with_buckets(encoder_inputs_tensor, decoder_inputs, targets, weights,
     for j, bucket in enumerate(buckets):
       with variable_scope.variable_scope(variable_scope.get_variable_scope(),
                                          reuse=True if j > 0 else None):
-        encoder_inputs = tf.split(axis=0, num_or_size_splits=bucket[0], value=encoder_inputs_tensor)
+        encoder_inputs = tf.split(encoder_inputs_tensor, bucket[0], 0)
         encoder_inputs = [tf.squeeze(encoder_input,axis=[0]) for encoder_input in encoder_inputs]
         bucket_outputs, attention_weights_history = seq2seq(encoder_inputs[:int(bucket[0])],
                                     decoder_inputs[:int(bucket[1])], int(bucket[0]))

@@ -4,7 +4,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import random, time, os, shutil, math, sys, logging, ipdb
+import random, time, os, shutil, math, sys, logging
 import numpy as np
 np.random.bit_generator = np.random._bit_generator
 from six.moves import xrange  # pylint: disable=redefined-builtin

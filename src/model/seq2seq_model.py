@@ -25,13 +25,13 @@ import numpy as np
 from six.moves import xrange  # pylint: disable=redefined-builtin
 import tensorflow as tf
 
-from . import data_utils
+#from . import data_utils
 #from tensorflow.nn import rnn, rnn_cell
-from tensorflow.contrib.rnn.python.ops import rnn_cell
+#from tensorflow.contrib.rnn.python.ops import rnn_cell
 from tensorflow.python.ops import array_ops
 from tensorflow.python.ops import variable_scope
 
-from tensorflow.contrib.learn.python.learn.models import bidirectional_rnn
+#from tensorflow.contrib.learn.python.learn.models import bidirectional_rnn
 
 from .seq2seq import model_with_buckets
 from .seq2seq import embedding_attention_decoder
@@ -88,14 +88,15 @@ class Seq2SeqModel(object):
         self.encoder_masks = encoder_masks
 
         # Create the internal multi-layer cell for our RNN.
-        single_cell = tf.contrib.rnn.BasicLSTMCell(attn_num_hidden, forget_bias=0.0, state_is_tuple=False)
         if use_gru:
             print("using GRU CELL in decoder")
             single_cell = tf.contrib.rnn.GRUCell(attn_num_hidden)
-        cell = single_cell
-
+        else:
+            single_cell = tf.contrib.rnn.BasicLSTMCell(attn_num_hidden, forget_bias=0.0, state_is_tuple=False)
         if attn_num_layers > 1:
             cell = tf.contrib.rnn.MultiRNNCell([single_cell] * attn_num_layers, state_is_tuple=False)
+        else:
+            cell = single_cell
 
         # The seq2seq function: we use embedding for the input and attention.
         def seq2seq_f(lstm_inputs, decoder_inputs, seq_length, do_decode):
@@ -105,15 +106,15 @@ class Seq2SeqModel(object):
             # Backward direction cell
             lstm_bw_cell = tf.contrib.rnn.BasicLSTMCell(num_hidden, forget_bias=0.0, state_is_tuple=False)
 
-            pre_encoder_inputs, output_state = bidirectional_rnn(lstm_fw_cell, lstm_bw_cell, lstm_inputs,
+            pre_encoder_inputs, output_state_fw, output_state_bw = tf.contrib.rnn.static_bidirectional_rnn(lstm_fw_cell, lstm_bw_cell, lstm_inputs,
                 initial_state_fw=None, initial_state_bw=None,
                 dtype=tf.float32, sequence_length=None, scope=None)
 
             encoder_inputs = [e*f for e,f in zip(pre_encoder_inputs,encoder_masks[:seq_length])]
             top_states = [array_ops.reshape(e, [-1, 1, num_hidden*2])
                     for e in encoder_inputs]
-            attention_states = array_ops.concat( top_states, 1)
-            initial_state = output_state
+            attention_states = array_ops.concat(top_states, 1)
+            initial_state = tf.concat(axis=1, values=[output_state_fw, output_state_bw])
             outputs, _, attention_weights_history = embedding_attention_decoder(
                     decoder_inputs, initial_state, attention_states, cell,
                     num_symbols=target_vocab_size, 

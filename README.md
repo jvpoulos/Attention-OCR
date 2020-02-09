@@ -37,7 +37,7 @@ IAM image and transcription preprocessing from [Laia](https://github.com/jpuigce
 
 ### Tensorflow 1.14
 
-### Required packages: {distance, ipdb, tqdm, pillow, matplotlib, imgaug}:
+### Required packages: {distance, tqdm, pillow, matplotlib, imgaug}:
 
 ```
 pip3 install {package}
