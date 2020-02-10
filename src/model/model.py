@@ -10,7 +10,6 @@ np.random.bit_generator = np.random._bit_generator
 from six.moves import xrange  # pylint: disable=redefined-builtin
 from PIL import Image
 import tensorflow as tf
-from . import data_utils
 
 import matplotlib
 matplotlib.use('Agg')
@@ -332,9 +331,9 @@ class Model(object):
                         decoder_inputs = batch['decoder_inputs']
                         target_weights = batch['target_weights']
                         encoder_masks = batch['encoder_mask']
-                        #logging.info('current_step: %d'%current_step)
-                        #logging.info(np.array([decoder_input.tolist() for decoder_input in decoder_inputs]).transpose()[0])
-                        #print (np.array([target_weight.tolist() for target_weight in target_weights]).transpose()[0])
+                        logging.info('current_step: %d'%current_step)
+                        logging.info(np.array([decoder_input.tolist() for decoder_input in decoder_inputs]).transpose()[0])
+                        print (np.array([target_weight.tolist() for target_weight in target_weights]).transpose()[0])
                         summaries, step_loss, step_logits, _ = self.step(
                             encoder_masks, img_data, zero_paddings,
                             decoder_inputs, target_weights, bucket_id,
@@ -358,7 +357,8 @@ class Model(object):
                                     ground_valid.append(s2)
                                 else:
                                     flag_ground = False
-                                if s1 != 2 and flag_out:
+                                # if s1 != 2 and flag_out:
+                                if s1 != 2 and  s2!=2 and flag_out:
                                     output_valid.append(s1)
                                 else:
                                     flag_out = False
@@ -479,7 +479,6 @@ class Model(object):
                    if (c-3)== j:
                        gv[i]=l
 
-            print('aaa ground valid', gv, ground_valid)
             fword.write(' '.join(gv))
 
             ov=output_valid
