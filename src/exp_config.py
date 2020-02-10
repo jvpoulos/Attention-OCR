@@ -36,7 +36,7 @@ class ExpConfig:
     MAX_GRADIENT_NORM = 5.0 # Clip gradients to this norm
     TARGET_EMBEDDING_SIZE = 10 # embedding dimension for each target
     OPT_ATTN = 'softmax' # which attention mechanism to use: 'softmax' (default); 'log_softmax'; 'sigmoid'; 'no_attn'
-    USE_GRUE = True # use GRU rather than LSTM for decoder
+    USE_GRU = True # use GRU rather than LSTM for decoder
     ATTN_NUM_HIDDEN=128 # number of hidden units in attention decoder cell
     ATTN_NUM_LAYERS = 2 # number of layers in attention decoder cell
                         # (Encoder number of hidden units will be ATTN_NUM_HIDDEN*ATTN_NUM_LAYERS)

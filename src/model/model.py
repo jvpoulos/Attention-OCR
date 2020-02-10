@@ -320,6 +320,8 @@ class Model(object):
                         # Get a batch and make a step.
                         num_total = 0
                         num_correct = 0
+                        numerator = 0
+                        denominator = 0
                         start_time = time.time()
                         batch_len = batch['real_len']
                         bucket_id = batch['bucket_id']
@@ -357,27 +359,29 @@ class Model(object):
                                     ground_valid.append(s2)
                                 else:
                                     flag_ground = False
-                                # if s1 != 2 and flag_out:
                                 if s1 != 2 and  s2!=2 and flag_out:
                                     output_valid.append(s1)
                                 else:
                                     flag_out = False
                             if distance_loaded:
-                                num_incorrect = distance.levenshtein(output_valid, ground_valid)
-                                num_incorrect = float(num_incorrect) / len(ground_valid)
+                                lev = distance.levenshtein(output_valid, ground_valid)
+                                num_incorrect = float(lev) / len(ground_valid)
                                 num_incorrect = min(1.0, num_incorrect)
+                                nchar = len(ground_valid)
                             else:
                                 if output_valid == ground_valid:
                                     num_incorrect = 0
                                 else:
                                     num_incorrect = 1
                             num_correct += 1. - num_incorrect
+                            numerator += lev
+                            denominator += nchar
 
                         writer.add_summary(summaries, current_step)
                         curr_step_time = (time.time() - start_time)
                         step_time += curr_step_time / self.steps_per_checkpoint
                         precision = num_correct / num_total
-                        logging.info('step %f - time: %f, loss: %f, perplexity: %f, precision: %f, batch_len: %f'%(current_step, curr_step_time, step_loss, math.exp(step_loss) if step_loss < 300 else float('inf'), precision, batch_len))
+                        logging.info('step %f - time: %f, loss: %f, perplexity: %f, precision: %f, CER: %f, batch_len: %f'%(current_step, curr_step_time, step_loss, math.exp(step_loss) if step_loss < 300 else float('inf'), precision, numerator/denominator, batch_len))
                         loss += step_loss / self.steps_per_checkpoint
                         pbar.set_description('Train, loss={:.8f}'.format(step_loss))
                         pbar.update()
