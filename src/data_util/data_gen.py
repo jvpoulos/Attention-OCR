@@ -21,10 +21,11 @@ class DataGen(object):
             data_root, annotation_fn,
             evaluate = False,
             valid_target_len = float('inf'),
-    		img_width_range = (83, 2083), # iamdb train set
+            img_width_range = (83, 2083), # iamdb train set
             word_len = 81): 
-        # img_width_range = (135,2358), # rimes
-        #     word_len = 100): 
+            # img_width_range = (135,2358), # rimes
+            # word_len = 100): 
+
        
         """
         :param data_root:
@@ -42,17 +43,13 @@ class DataGen(object):
             self.annotation_path = os.path.join(data_root, annotation_fn)
 
         if evaluate:
-            self.bucket_specs = [(int(math.ceil(img_width_range[0])), int(math.ceil(img_width_range[1] / 8))),
-                             (int(math.ceil(img_width_range[1]/8 )), int(math.ceil(img_width_range[1] / 6))),
-                             (int(math.ceil(img_width_range[1]/6 )), int(math.ceil(img_width_range[1] / 4))), 
-                             (int(math.ceil(img_width_range[1] / 4)), int(math.ceil(img_width_range[1] / 3))), 
-                            (int(math.ceil(img_width_range[1] / 3)), int(math.ceil(img_width_range[1]/2)))] 
+            self.bucket_specs = [(int(math.floor(64 / 4)), int(word_len + 2)), (int(math.floor(108 / 4)), int(word_len + 2)),
+                                 (int(math.floor(140 / 4)), int(word_len + 2)), (int(math.floor(256 / 4)), int(word_len + 2)),
+                                 (int(math.floor(img_width_range[1] / 4)), int(word_len + 2))]
         else:
-            self.bucket_specs = [(int(math.ceil(img_width_range[0])), int(math.ceil(img_width_range[1] / 8))),
-                             (int(math.ceil(img_width_range[1]/8 )), int(math.ceil(img_width_range[1] / 6))),
-                             (int(math.ceil(img_width_range[1]/6 )), int(math.ceil(img_width_range[1] / 4))), 
-                             (int(math.ceil(img_width_range[1] / 4)), int(math.ceil(img_width_range[1] / 3))), 
-                            (int(math.ceil(img_width_range[1] / 3)), int(math.ceil(img_width_range[1]/2)))] 
+            self.bucket_specs = [(int(64 / 4), 9 + 2), (int(108 / 4), 15 + 2),
+                             (int(140 / 4), 17 + 2), (int(256 / 4), 20 + 2),
+                             (int(math.ceil(img_width_range[1] / 4)), word_len + 2)]
                             
         self.bucket_min_width, self.bucket_max_width = img_width_range
         self.image_height = img_height
@@ -174,11 +171,11 @@ class DataGen(object):
            labels = f.read().splitlines()
 
         for c in lex:
-            # print('c ord(c)', c, ord(c))
+            print('c ord(c)', c, ord(c))
             for i, l in enumerate(labels):
                 if c== l:
                    n=i+3
-                   # print('data gen c ord(c) l i n : ', c, ord(c), l, i, n)
+                   print('data gen c ord(c) l i n : ', c, ord(c), l, i, n)
                    word.append(n)
 
         word.append(self.EOS)
