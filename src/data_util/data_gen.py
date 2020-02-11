@@ -26,7 +26,6 @@ class DataGen(object):
             # img_width_range = (135,2358), # rimes
             # word_len = 100): 
 
-       
         """
         :param data_root:
         :param annotation_fn:
@@ -70,6 +69,7 @@ class DataGen(object):
         valid_target_len = self.valid_target_len
         with open(self.annotation_path, 'r', encoding='utf-8') as ann_file:
             lines = ann_file.readlines()
+            print('annotation_path ', self.annotation_path)
             random.shuffle(lines)
             for l in lines:
                 # img_path, lex = l.strip().split()
@@ -172,11 +172,11 @@ class DataGen(object):
            labels = f.read().splitlines()
 
         for c in lex:
-            # print('c ord(c)', c, ord(c))
+            print('c ord(c)', c, ord(c))
             for i, l in enumerate(labels):
                 if c== l:
                    n=i+3
-                   # print('data gen c ord(c) l i n : ', c, ord(c), l, i, n)
+                   print('data gen c ord(c) l i n : ', c, ord(c), l, i, n)
                    word.append(n)
 
         word.append(self.EOS)

@@ -26,8 +26,6 @@ class BucketData(object):
     def append(self, datum, label, filename):
         self.data_list.append(datum)
         self.data_len_list.append(int(math.floor(datum.shape[-1] / 4)) - 1)
-        self.label_list.append(label)
-        self.file_list.append(filename)
 
         label_file = DEFAULT_LABEL_FILE
         with io.open(label_file, 'r', encoding='utf-8') as f:

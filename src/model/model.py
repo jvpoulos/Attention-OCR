@@ -75,6 +75,7 @@ class Model(object):
         if phase == 'train':
             self.s_gen = DataGen(
                 data_base_dir, data_path, valid_target_len=valid_target_length, evaluate=False)
+            print(self.s_gen)
         else:
             batch_size = 1
             self.s_gen = DataGen(
@@ -283,6 +284,10 @@ class Model(object):
                             output_valid.append(s1)
                         else:
                             flag_out = False
+                        print('test : ground_valid, output_valid : ' , ground_valid, output_valid)
+                        if not output_valid :
+                            s1_t=np.array([90000])                      
+                            output_valid.append(s1_t)   
                     if distance_loaded:
                         lev = distance.levenshtein(output_valid, ground_valid)
                         if self.visualize:
@@ -304,7 +309,9 @@ class Model(object):
                 logging.info('Lev: %f, length of test set: %f' %(numerator, denominator))
         elif self.phase == 'train':
             total = (self.s_gen.get_size() // self.batch_size)
+            print('total', total,self.s_gen.get_size(), self.batch_size)
             with tqdm(desc='Train: ', total=total) as pbar:
+                print('self.num_epoch', self.num_epoch)
                 st = lambda aug: iaa.Sometimes(self.augmentation, aug)
                 seq = iaa.Sequential([
                     st(iaa.Affine(scale={"x": (0.8, 1.2), "y": (0.8, 1.2)}, # scale images to 80-120% of their size, individually per axis
@@ -316,6 +323,7 @@ class Model(object):
                 for epoch in range(self.num_epoch):
 
                    logging.info('Generating first batch')
+                   print('epoch', epoch)
                    for i, batch in enumerate(self.s_gen.gen(self.batch_size)):
                         # Get a batch and make a step.
                         num_total = 0
@@ -460,6 +468,7 @@ class Model(object):
 
 
     def visualize_attention(self, filename, attentions, output_valid, ground_valid, flag_incorrect, real_len):
+        print('groundvalid  outputvalid in visualize',  ground_valid, output_valid )    
         if flag_incorrect:
             output_dir = os.path.join(self.output_dir, 'incorrect')
         else:
@@ -482,7 +491,8 @@ class Model(object):
                 for j, l in enumerate(labels):
                    if (c-3)== j:
                        gv[i]=l
-
+            
+            print('aaa ground valid', gv, ground_valid)
             fword.write(' '.join(gv))
 
             ov=output_valid
