@@ -2,13 +2,11 @@ __author__ = 'moonkey'
 
 import sys, argparse, logging
 
+logging.getLogger("tensorflow").setLevel(logging.ERROR)
+
 import numpy as np
 from PIL import Image
 import tensorflow as tf
-
-import logging
-logger = tf.get_logger()
-logger.setLevel(logging.ERROR)
 
 from model.model import Model
 import exp_config
