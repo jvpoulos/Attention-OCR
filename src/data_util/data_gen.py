@@ -72,8 +72,8 @@ class DataGen(object):
             print('annotation_path ', self.annotation_path)
             random.shuffle(lines)
             for l in lines:
-                # img_path, lex = l.strip().split()
-                img_path, lex = l.rstrip().split('  ')
+                img_path, lex = l.strip().split()
+                # img_path, lex = l.rstrip().split('  ')
                 try:
                     img_bw, word = self.read_data(img_path, lex)
                     if valid_target_len < float('inf'):
