@@ -5,7 +5,7 @@ import sys, argparse, logging
 import numpy as np
 from PIL import Image
 import tensorflow as tf
-tf.logging.set_verbosity(tf.logging.ERROR)
+tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
 
 from model.model import Model
