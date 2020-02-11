@@ -5,8 +5,10 @@ import sys, argparse, logging
 import numpy as np
 from PIL import Image
 import tensorflow as tf
-tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
+import logging
+logger = tf.get_logger()
+logger.setLevel(logging.ERROR)
 
 from model.model import Model
 import exp_config
