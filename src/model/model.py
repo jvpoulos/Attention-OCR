@@ -181,7 +181,7 @@ class Model(object):
             with tf.device(gpu_device_id):
                 params = tf.trainable_variables()
                 # Gradients and SGD update operation for training the model.
-                opt = tf.train.AdadeltaOptimizer(learning_rate=initial_learning_rate)
+                opt = tf.train.AdamOptimizer(learning_rate=initial_learning_rate)
                 for b in xrange(len(buckets)):
                     if self.reg_val > 0:
                         reg_losses = tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES)
