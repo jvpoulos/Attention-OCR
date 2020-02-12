@@ -114,7 +114,7 @@ class Seq2SeqModel(object):
             top_states = [array_ops.reshape(e, [-1, 1, num_hidden*2])
                     for e in encoder_inputs]
             attention_states = array_ops.concat(top_states, 1)
-            initial_state = tf.stack(axis=1, values=[output_state_fw, output_state_bw])
+            initial_state = tf.stack(axis=0, values=[output_state_fw, output_state_bw])
             outputs, _, attention_weights_history = embedding_attention_decoder(
                     decoder_inputs, initial_state, attention_states, cell,
                     num_symbols=target_vocab_size, 

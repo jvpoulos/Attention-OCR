@@ -153,7 +153,7 @@ class Model(object):
             # cnn_model = CNN(self.img_data, True) #(not self.forward_only))
             cnn_model = CNN(self.img_data, not self.forward_only)
             self.conv_output = cnn_model.tf_output()
-            self.concat_conv_output = tf.stack(axis=1, values=[self.conv_output, self.zero_paddings])
+            self.concat_conv_output = tf.stack(axis=0, values=[self.conv_output, self.zero_paddings])
 
             self.perm_conv_output = tf.transpose(self.concat_conv_output, perm=[1, 0, 2])
 
