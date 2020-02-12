@@ -172,11 +172,11 @@ class DataGen(object):
            labels = f.read().splitlines()
 
         for c in lex:
-            print('c ord(c)', c, ord(c))
+            # print('c ord(c)', c, ord(c))
             for i, l in enumerate(labels):
                 if c== l:
                    n=i+3
-                   print('data gen c ord(c) l i n : ', c, ord(c), l, i, n)
+                   # print('data gen c ord(c) l i n : ', c, ord(c), l, i, n)
                    word.append(n)
 
         word.append(self.EOS)
