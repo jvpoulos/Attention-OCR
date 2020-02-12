@@ -32,18 +32,10 @@ SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_LABEL_FILE = os.path.join(SCRIPT_PATH,
                                   '../labels/target-vocab.txt')
 
-gpus = tf.config.experimental.list_physical_devices('GPU')
-if gpus:
-  try:
-    # Currently, memory growth needs to be the same across GPUs
-    for gpu in gpus:
-      tf.config.experimental.set_memory_growth(gpu, True)
-    logical_gpus = tf.config.experimental.list_logical_devices('GPU')
-    print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
-  except RuntimeError as e:
-    # Memory growth must be set before GPUs have been initialized
-    print(e)
-    
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+session = tf.Session(config=config, ...)
+
 class Model(object):
 
     def __init__(self,
