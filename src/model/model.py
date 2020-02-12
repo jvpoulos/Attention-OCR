@@ -178,7 +178,7 @@ class Model(object):
 
             self.updates = []
             self.summaries_by_bucket = []
-            with tf.device(gpu_device_id_2):
+            with tf.device(gpu_device_id):
                 params = tf.trainable_variables()
                 # Gradients and SGD update operation for training the model.
                 opt = tf.train.AdadeltaOptimizer(learning_rate=initial_learning_rate)
