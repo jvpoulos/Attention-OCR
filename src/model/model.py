@@ -32,6 +32,18 @@ SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_LABEL_FILE = os.path.join(SCRIPT_PATH,
                                   '../labels/target-vocab.txt')
 
+gpus = tf.config.experimental.list_physical_devices('GPU')
+if gpus:
+  try:
+    # Currently, memory growth needs to be the same across GPUs
+    for gpu in gpus:
+      tf.config.experimental.set_memory_growth(gpu, True)
+    logical_gpus = tf.config.experimental.list_logical_devices('GPU')
+    print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
+  except RuntimeError as e:
+    # Memory growth must be set before GPUs have been initialized
+    print(e)
+    
 class Model(object):
 
     def __init__(self,
@@ -323,7 +335,7 @@ class Model(object):
                 for epoch in range(self.num_epoch):
 
                    logging.info('Generating first batch')
-                   print('epoch', epoch)
+                   # print('epoch', epoch)
                    for i, batch in enumerate(self.s_gen.gen(self.batch_size)):
                         # Get a batch and make a step.
                         num_total = 0
