@@ -10,6 +10,9 @@ np.random.bit_generator = np.random._bit_generator
 from six.moves import xrange  # pylint: disable=redefined-builtin
 from PIL import Image
 import tensorflow as tf
+config = tf.ConfigProto()
+config.gpu_options.allow_growth=True
+sess = tf.Session(config=config)
 
 import matplotlib
 matplotlib.use('Agg')
@@ -31,10 +34,6 @@ except ImportError:
 SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_LABEL_FILE = os.path.join(SCRIPT_PATH,
                                   '../labels/target-vocab.txt')
-
-config = tf.ConfigProto()
-config.gpu_options.allow_growth=True
-sess = tf.Session(config=config)
 
 class Model(object):
 
@@ -66,11 +65,7 @@ class Model(object):
                  valid_target_length=float('inf')):
 
     	# Support two GPUs
-        gpu_device_id_1 = '/gpu:' + str(gpu_id)
-        gpu_device_id_2 = '/gpu:' + str(gpu_id)
-        if gpu_id == 2:
-        	gpu_device_id_1 = '/gpu:' + str(gpu_id-1)
-        	gpu_device_id_2 = '/gpu:' + str(gpu_id-2)
+        gpu_device_id = '/gpu:' + str(gpu_id)
 
         if not os.path.exists(model_dir):
             os.makedirs(model_dir)
@@ -153,7 +148,7 @@ class Model(object):
         else:
             assert False, phase
 
-        with tf.device(gpu_device_id_1):
+        with tf.device(gpu_device_id):
             # cnn_model = CNN(self.img_data, True) #(not self.forward_only))
             cnn_model = CNN(self.img_data, not self.forward_only)
             self.conv_output = cnn_model.tf_output()
@@ -161,7 +156,7 @@ class Model(object):
 
             self.perm_conv_output = tf.transpose(self.concat_conv_output, perm=[1, 0, 2])
 
-        with tf.device(gpu_device_id_2):
+        with tf.device(gpu_device_id):
             self.attention_decoder_model = Seq2SeqModel(
                 encoder_masks = self.encoder_masks,
                 encoder_inputs_tensor = self.perm_conv_output,
@@ -346,7 +341,7 @@ class Model(object):
                         target_weights = batch['target_weights']
                         encoder_masks = batch['encoder_mask']
                         logging.info('current_step: %d'%current_step)
-                        logging.info(np.array([decoder_input.tolist() for decoder_input in decoder_inputs]).transpose()[0])
+                        # logging.info(np.array([decoder_input.tolist() for decoder_input in decoder_inputs]).transpose()[0])
                         # print (np.array([target_weight.tolist() for target_weight in target_weights]).transpose()[0])
                         summaries, step_loss, step_logits, _ = self.step(
                             encoder_masks, img_data, zero_paddings,
