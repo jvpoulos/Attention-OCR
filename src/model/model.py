@@ -343,7 +343,7 @@ class Model(object):
                         encoder_masks = batch['encoder_mask']
                         logging.info('current_step: %d'%current_step)
                         logging.info(np.array([decoder_input.tolist() for decoder_input in decoder_inputs]).transpose()[0])
-                        print (np.array([target_weight.tolist() for target_weight in target_weights]).transpose()[0])
+                        # print (np.array([target_weight.tolist() for target_weight in target_weights]).transpose()[0])
                         summaries, step_loss, step_logits, _ = self.step(
                             encoder_masks, img_data, zero_paddings,
                             decoder_inputs, target_weights, bucket_id,
