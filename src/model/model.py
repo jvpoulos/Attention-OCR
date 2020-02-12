@@ -75,7 +75,7 @@ class Model(object):
         if phase == 'train':
             self.s_gen = DataGen(
                 data_base_dir, data_path, valid_target_len=valid_target_length, evaluate=False)
-            print(self.s_gen)
+            # print(self.s_gen)
         else:
             batch_size = 1
             self.s_gen = DataGen(

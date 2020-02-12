@@ -69,7 +69,7 @@ class DataGen(object):
         valid_target_len = self.valid_target_len
         with open(self.annotation_path, 'r', encoding='utf-8') as ann_file:
             lines = ann_file.readlines()
-            print('annotation_path ', self.annotation_path)
+            # print('annotation_path ', self.annotation_path)
             random.shuffle(lines)
             for l in lines:
                 img_path, lex = l.strip().split()
@@ -152,11 +152,11 @@ class DataGen(object):
 
         word = [self.GO]
 
-        try:
-            fp=open('outputs.txt', 'w+', encoding='utf-8')
-        except:
-            print('could not open file'+outputs.txt)
-            quit()     
+        # try:
+        #     fp=open('outputs.txt', 'w+', encoding='utf-8')
+        # except:
+        #     print('could not open file'+outputs.txt)
+        #     quit()     
         # for c in lex:
         #     assert 32 < ord(c) < 126 or 191 < ord(c) < 252
         #     if ord(c)==33:
