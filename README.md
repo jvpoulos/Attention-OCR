@@ -35,7 +35,7 @@ IAM image and transcription preprocessing from [Laia](https://github.com/jpuigce
 
 ### Python 3 (tested on Python 3.6.6)
 
-### Tensorflow 1.14
+### Tensorflow 1 (tested on 1.13.1)
 
 ### Required packages: {distance, tqdm, pillow, matplotlib, imgaug}:
 
@@ -58,10 +58,29 @@ Create a file `lines_train.txt` from the transcription `tr.txt` that replaces wh
 ./imgs_proc/a01-000u-01.jpg nominating|any|more|Labour|life|Peers
 ./imgs_proc/a01-000u-02.jpg is|to|be|made|at|a|meeting|of|Labour
 ```
-Also create file `lines_val.txt` from `htr/lang/word/va.txt` following the same format as above. 
+Also create files `lines_val.txt` and `lines_test.txt` from `htr/lang/word/va.txt` and `htr/lang/word/te.txt`, respectively, following the same format as above. 
 
-Note: We assume that the working directory is `Attention-OCR`. The directory structure within `Attention-OCR` should be:
+Create a file `src/labels/target_vocab.txt` with all unique target characters in the training set, with the number of characters equal to the value of `target-vocab-size`, e.g.:
 
+```
+!
+&
+0
+1
+:
+;
+A
+B
+a
+b
+|
+```
+
+Assume that the working directory is `Attention-OCR`. The data files within `Attention-OCR` should have the structure:
+
+- `src`
+  -  `labels`
+    - `target_vocab.txt`
 - `iamdb`
   - `imgs_proc` (folder of JPEG images)
   - `lines_train.txt`
@@ -76,17 +95,19 @@ python3 src/launcher.py \
 --data-path=lines_train.txt \
 --data-base-dir=iamdb \
 --model-dir=model_iamdb_softmax \
---log-path=log_iamdb_train.txt \
---reg-val=1 \
---attn-num-hidden 256 \
+--log-path=log_iamdb_train_softmax.txt \
+--reg-val=0.5 \
+--attn-num-hidden=256 \
+--attn-num-layers=2 \
 --batch-size=4 \
---num-epoch=200 \
+--num-epoch=150 \
 --steps-per-checkpoint=500 \
 --opt-attn=softmax \
---target-embedding-size=100 \
---target-vocab-size=95 \
---initial-learning-rate=1 \
---use-gru \
+--target-embedding-size=5 \
+--target-vocab-size=79 \
+--initial-learning-rate=0.0001 \
+--augmentation=0.1 \
+--gpu-id=0 \
 --no-load-model
 ```
 
@@ -94,23 +115,23 @@ You will see something like the following output in `log_iamdb_train.txt`:
 
 ```
 ...
-2017-05-04 19:15:44,919 root  INFO     Created model with fresh parameters.
-2017-05-04 19:17:22,927 root  INFO     Generating first batch
-2017-05-04 19:17:41,591 root  INFO     step 0.000000 - time: 14.091797, loss: 4.537364, perplexity: 93.444157, precision: 0.000000, batch_len: 438.000000
-2017-05-04 19:17:43,527 root  INFO     step 1.000000 - time: 1.669232, loss: 4.370135, perplexity: 79.054328, precision: 0.000000, batch_len: 416.000000
-2017-05-04 19:17:45,266 root  INFO     step 2.000000 - time: 1.706899, loss: 4.140279, perplexity: 62.820334, precision: 0.000000, batch_len: 404.000000
-2017-05-04 19:17:46,947 root  INFO     step 3.000000 - time: 1.609537, loss: 3.799597, perplexity: 44.683175, precision: 0.000000, batch_len: 395.000000
-2017-05-04 19:17:48,831 root  INFO     step 4.000000 - time: 1.846071, loss: 3.457146, perplexity: 31.726298, precision: 0.000000, batch_len: 478.000000
-2017-05-04 19:17:50,711 root  INFO     step 5.000000 - time: 1.644378, loss: 3.301664, perplexity: 27.157789, precision: 0.000000, batch_len: 463.000000
-2017-05-04 19:17:52,411 root  INFO     step 6.000000 - time: 1.674972, loss: 3.396979, perplexity: 29.873725, precision: 0.000000, batch_len: 458.000000
-2017-05-04 19:17:54,271 root  INFO     step 7.000000 - time: 1.675854, loss: 3.489168, perplexity: 32.758671, precision: 0.000000, batch_len: 432.000000
-2017-05-04 19:17:55,950 root  INFO     step 8.000000 - time: 1.601847, loss: 3.292296, perplexity: 26.904564, precision: 0.000000, batch_len: 441.000000
-2017-05-04 19:17:57,776 root  INFO     step 9.000000 - time: 1.704575, loss: 3.170712, perplexity: 23.824447, precision: 0.000000, batch_len: 429.000000
-2017-05-04 19:17:59,280 root  INFO     step 10.000000 - time: 0.817045, loss: 3.181931, perplexity: 24.093222, precision: 0.000000, batch_len: 419.000000
-
+09:22:22,993 root  INFO     Created model with fresh parameters.
+2020-02-18 09:22:59,658 root  INFO     Generating first batch
+2020-02-18 09:23:03,393 root  INFO     current_step: 0
+2020-02-18 09:24:33,511 root  INFO     step 0.000000 - time: 90.118267, loss: 4.375765, perplexity: 79.500660, precision: 0.020499, CER: 0.979798, batch_len: 469.000000
+2020-02-18 09:24:34,033 root  INFO     current_step: 1
+2020-02-18 09:24:34,677 root  INFO     step 1.000000 - time: 0.644488, loss: 4.364702, perplexity: 78.625946, precision: 0.013305, CER: 0.986486, batch_len: 301.000000
+2020-02-18 09:24:35,224 root  INFO     current_step: 2
+2020-02-18 09:24:35,955 root  INFO     step 2.000000 - time: 0.731375, loss: 4.341702, perplexity: 76.838169, precision: 0.114527, CER: 0.889571, batch_len: 613.000000
+2020-02-18 09:24:36,010 root  INFO     current_step: 3
+2020-02-18 09:24:36,721 root  INFO     step 3.000000 - time: 0.713290, loss: 4.327676, perplexity: 75.768019, precision: 0.169855, CER: 0.830409, batch_len: 516.000000
+2020-02-18 09:24:36,824 root  INFO     current_step: 4
+2020-02-18 09:24:37,508 root  INFO     step 4.000000 - time: 0.686172, loss: 4.304539, perplexity: 74.035057, precision: 0.165195, CER: 0.836158, batch_len: 457.000000
+2020-02-18 09:24:37,706 root  INFO     current_step: 5
+2020-02-18 09:24:38,399 root  INFO     step 5.000000 - time: 0.694256, loss: 4.264017, perplexity: 71.095007, precision: 0.192181, CER: 0.805128, batch_len: 481.000000
 ```
 
-Model checkpoints saved in `model` (the output directory is set via parameter `model-dir` and the default is `model`).
+Model checkpoints saved in `model_iamdb_softmax `.
 
 ## Test model and visualize attention
 
@@ -129,17 +150,15 @@ python3 src/launcher.py \
 --phase=test \
 --visualize \
 --data-path=lines_test.txt \
---data-base-dir=data \
+--data-base-dir=iamdb \
 --model-dir=model_iamdb_softmax \
 --log-path=log_iamdb_test.txt \
---reg-val=1 \
---batch-size=4 \
---num-epoch=200 \
---steps-per-checkpoint=500 \
+--attn-num-hidden=256 \
+--attn-num-layers=2 \
 --opt-attn=softmax \
---target-embedding-size=100 \
---target-vocab-size=95 \
---use-gru \
+--target-embedding-size=5 \
+--target-vocab-size=79 \
+--gpu-id=0 \
 --load-model \
 --output-dir=softmax_results
 ```
@@ -159,16 +178,6 @@ You will see something like the following output in `log_iamdb_val.txt`:
 2017-05-04 20:11:04,398 root  INFO     2.246663 out of 4 correct
 2017-05-04 20:11:07,883 root  INFO     step_time: 3.448558, loss: 10.126567, step perplexity: 24998.394628
 2017-05-04 20:11:25,554 root  INFO     2.483505 out of 5 correct
-2017-05-04 20:11:26,439 root  INFO     step_time: 0.846741, loss: 19.127279, step perplexity: 202708446.724307
-2017-05-04 20:11:54,204 root  INFO     3.203505 out of 6 correct
-2017-05-04 20:11:55,547 root  INFO     step_time: 1.328614, loss: 14.361533, step perplexity: 1726372.881045
-2017-05-04 20:12:16,062 root  INFO     3.586483 out of 7 correct
-2017-05-04 20:12:16,933 root  INFO     step_time: 0.846231, loss: 13.471820, step perplexity: 709148.247623
-2017-05-04 20:12:53,892 root  INFO     4.261483 out of 8 correct
-2017-05-04 20:12:55,135 root  INFO     step_time: 1.206629, loss: 8.952523, step perplexity: 7727.365214
-2017-05-04 20:13:24,057 root  INFO     5.025120 out of 9 correct
-2017-05-04 20:13:24,860 root  INFO     step_time: 0.770344, loss: 17.900974, step perplexity: 59469508.304005
-
 ```
 
 Output images in `softmax_results` (the output directory is set via parameter `output-dir` and the default is `results`). This example visualizes attention on an image:
@@ -184,7 +193,7 @@ This example plots the attention alignment over an image:
 Default parameters set in the file `src/exp_config.py`.
 
 - Control
-    * `GPU-ID`: ID number of the GPU. Set to 2 if using 2 GPUs. Default is 0. 
+    * `GPU-ID`: ID number of the GPU.
     * `phase`: Determine whether to 'train' or 'test'. Default is 'test'.
     * `visualize`: Valid if `phase` is set to test. Output the attention maps on the original image. Set flag to `no-visualize` to test without visualizing. 
     * `load-model`: Load model from `model-dir` or not.
