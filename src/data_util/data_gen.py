@@ -21,10 +21,10 @@ class DataGen(object):
             data_root, annotation_fn,
             evaluate = False,
             valid_target_len = float('inf'),
-            # img_width_range = (83, 2083), # iamdb train set
-            # word_len = 81):
-            img_width_range = (354,1990), # sgdb
-            word_len = 74): 
+            img_width_range = (83, 2083), # iamdb train set
+            word_len = 81):
+            # img_width_range = (354,1990), # sgdb
+            # word_len = 74): 
 #            img_width_range = (135,2358), # rimes
 #            word_len = 100): 
 
