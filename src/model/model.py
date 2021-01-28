@@ -10,9 +10,7 @@ import numpy as np
 from six.moves import xrange  # pylint: disable=redefined-builtin
 from PIL import Image
 import tensorflow as tf
-config = tf.ConfigProto()
-config.gpu_options.allow_growth=True
-sess = tf.Session(config=config)
+from . import data_utils
 
 import matplotlib
 matplotlib.use('Agg')
@@ -30,10 +28,6 @@ try:
     distance_loaded = True
 except ImportError:
     distance_loaded = False
-
-SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_LABEL_FILE = os.path.join(SCRIPT_PATH,
-                                  '../labels/target-vocab.txt')
 
 class Model(object):
 
@@ -64,8 +58,12 @@ class Model(object):
                  evaluate=False,
                  valid_target_length=float('inf')):
 
-    	# Support two GPUs
-        gpu_device_id = '/gpu:' + str(gpu_id)
+        # Support two GPUs
+        gpu_device_id_1 = '/gpu:' + str(gpu_id)
+        gpu_device_id_2 = '/gpu:' + str(gpu_id)
+        if gpu_id == 2:
+            gpu_device_id_1 = '/gpu:' + str(gpu_id-1)
+            gpu_device_id_2 = '/gpu:' + str(gpu_id-2)
 
         if not os.path.exists(model_dir):
             os.makedirs(model_dir)
@@ -74,7 +72,6 @@ class Model(object):
         if phase == 'train':
             self.s_gen = DataGen(
                 data_base_dir, data_path, valid_target_len=valid_target_length, evaluate=False)
-            # print(self.s_gen)
         else:
             batch_size = 1
             self.s_gen = DataGen(
@@ -89,8 +86,8 @@ class Model(object):
         logging.info('steps_per_checkpoint: %d' % (steps_per_checkpoint))
         logging.info('batch_size: %d' %(batch_size))
         logging.info('num_epoch: %d' %num_epoch)
-        logging.info('learning_rate: %s' % initial_learning_rate)
-        logging.info('reg_val: %s' % reg_val)
+        logging.info('learning_rate: %d' % initial_learning_rate)
+        logging.info('reg_val: %d' % reg_val)
         logging.info('max_gradient_norm: %f' % max_gradient_norm)
         logging.info('opt_attn: %s' % opt_attn)
         logging.info('clip_gradients: %s' % clip_gradients)
@@ -109,7 +106,7 @@ class Model(object):
             logging.info('use GRU in the decoder.')
 
         # variables
-        self.img_data = tf.placeholder(tf.float32, shape=(None, 1, 32, None), name='img_data')
+        self.img_data = tf.placeholder(tf.float32, shape=(None, 1, 64, None), name='img_data')
         self.zero_paddings = tf.placeholder(tf.float32, shape=(None, None, 512), name='zero_paddings')
 
         self.decoder_inputs = []
@@ -148,15 +145,14 @@ class Model(object):
         else:
             assert False, phase
 
-        with tf.device(gpu_device_id):
-            # cnn_model = CNN(self.img_data, True) #(not self.forward_only))
-            cnn_model = CNN(self.img_data, not self.forward_only)
+        with tf.device(gpu_device_id_1):
+            cnn_model = CNN(self.img_data, True) #(not self.forward_only))
             self.conv_output = cnn_model.tf_output()
             self.concat_conv_output = tf.concat(axis=1, values=[self.conv_output, self.zero_paddings])
 
             self.perm_conv_output = tf.transpose(self.concat_conv_output, perm=[1, 0, 2])
 
-        with tf.device(gpu_device_id):
+        with tf.device(gpu_device_id_2):
             self.attention_decoder_model = Seq2SeqModel(
                 encoder_masks = self.encoder_masks,
                 encoder_inputs_tensor = self.perm_conv_output,
@@ -178,10 +174,10 @@ class Model(object):
 
             self.updates = []
             self.summaries_by_bucket = []
-            with tf.device(gpu_device_id):
+            with tf.device(gpu_device_id_2):
                 params = tf.trainable_variables()
                 # Gradients and SGD update operation for training the model.
-                opt = tf.train.AdamOptimizer(learning_rate=initial_learning_rate)
+                opt = tf.train.AdadeltaOptimizer(learning_rate=initial_learning_rate)
                 for b in xrange(len(buckets)):
                     if self.reg_val > 0:
                         reg_losses = tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES)
@@ -216,7 +212,7 @@ class Model(object):
                     with tf.control_dependencies(update_ops):
                         self.updates.append(opt.apply_gradients(zip(gradients, params), global_step=self.global_step))
 
-        self.saver_all = tf.train.Saver(tf.all_variables())
+        self.saver_all = tf.train.Saver(tf.global_variables())
 
         ckpt = tf.train.get_checkpoint_state(model_dir)
         if ckpt and load_model:
@@ -225,7 +221,7 @@ class Model(object):
             self.saver_all.restore(self.sess, ckpt.model_checkpoint_path)
         else:
             logging.info("Created model with fresh parameters.")
-            self.sess.run(tf.initialize_all_variables())
+            self.sess.run(tf.global_variables_initializer())
         #self.sess.run(init_new_vars_op)
 
 
@@ -283,14 +279,10 @@ class Model(object):
                             output_valid.append(s1)
                         else:
                             flag_out = False
-                        # print('test : ground_valid, output_valid : ' , ground_valid, output_valid)
-                        if not output_valid :
-                            s1_t=np.array([90000])                      
-                            output_valid.append(s1_t)   
                     if distance_loaded:
                         lev = distance.levenshtein(output_valid, ground_valid)
                         if self.visualize:
-                            self.visualize_attention(file_list[idx], step_attns[idx], output_valid, ground_valid, lev>0, real_len)
+                            self.visualize_attention(file_list[idx], step_attns[idx], output_valid, ground_valid, num_incorrect>0, real_len)
                         num_incorrect = float(lev) / len(ground_valid)
                         num_incorrect = min(1.0, num_incorrect)
                         nchar = len(ground_valid)
@@ -306,11 +298,10 @@ class Model(object):
                     denominator += nchar
                 logging.info('%f out of %d correct' %(num_correct, num_total))
                 logging.info('Lev: %f, length of test set: %f' %(numerator, denominator))
+                logging.info('Global loss: %f, Global perplexity: %f' %(loss,math.exp(loss) if loss < 300 else float('inf')))
         elif self.phase == 'train':
             total = (self.s_gen.get_size() // self.batch_size)
-            # print('total', total,self.s_gen.get_size(), self.batch_size)
             with tqdm(desc='Train: ', total=total) as pbar:
-                # print('self.num_epoch', self.num_epoch)
                 st = lambda aug: iaa.Sometimes(self.augmentation, aug)
                 seq = iaa.Sequential([
                     st(iaa.Affine(scale={"x": (0.8, 1.2), "y": (0.8, 1.2)}, # scale images to 80-120% of their size, individually per axis
@@ -322,7 +313,6 @@ class Model(object):
                 for epoch in range(self.num_epoch):
 
                    logging.info('Generating first batch')
-                   # print('epoch', epoch)
                    for i, batch in enumerate(self.s_gen.gen(self.batch_size)):
                         # Get a batch and make a step.
                         num_total = 0
@@ -340,9 +330,9 @@ class Model(object):
                         decoder_inputs = batch['decoder_inputs']
                         target_weights = batch['target_weights']
                         encoder_masks = batch['encoder_mask']
-                        logging.info('current_step: %d'%current_step)
-                        # logging.info(np.array([decoder_input.tolist() for decoder_input in decoder_inputs]).transpose()[0])
-                        # print (np.array([target_weight.tolist() for target_weight in target_weights]).transpose()[0])
+                        #logging.info('current_step: %d'%current_step)
+                        #logging.info(np.array([decoder_input.tolist() for decoder_input in decoder_inputs]).transpose()[0])
+                        #print (np.array([target_weight.tolist() for target_weight in target_weights]).transpose()[0])
                         summaries, step_loss, step_logits, _ = self.step(
                             encoder_masks, img_data, zero_paddings,
                             decoder_inputs, target_weights, bucket_id,
@@ -366,7 +356,7 @@ class Model(object):
                                     ground_valid.append(s2)
                                 else:
                                     flag_ground = False
-                                if s1 != 2 and  s2!=2 and flag_out:
+                                if s1 != 2 and flag_out:
                                     output_valid.append(s1)
                                 else:
                                     flag_out = False
@@ -403,9 +393,8 @@ class Model(object):
                         # Once in a while, we save checkpoint, print statistics, and run evals.
                         if current_step % self.steps_per_checkpoint == 0:
                             # Print statistics for the previous epoch.
-                            perplexity = math.exp(loss) if loss < 300 else float('inf')
                             logging.info("global step %d step-time %.2f loss %f  perplexity "
-                                    "%.2f" % (self.global_step.eval(), step_time, loss, perplexity))
+                                    "%.2f" % (self.global_step.eval(), step_time, loss, math.exp(loss) if loss < 300 else float('inf')))
                             previous_losses.append(loss)
                             # Save checkpoint and zero timer and loss.
                             if not self.forward_only:
@@ -467,7 +456,6 @@ class Model(object):
 
 
     def visualize_attention(self, filename, attentions, output_valid, ground_valid, flag_incorrect, real_len):
-        # print('groundvalid  outputvalid in visualize',  ground_valid, output_valid )    
         if flag_incorrect:
             output_dir = os.path.join(self.output_dir, 'incorrect')
         else:
@@ -475,33 +463,11 @@ class Model(object):
         output_dir = os.path.join(output_dir, filename.replace('/', '_'))
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
-        # with open(os.path.join(output_dir, 'word.txt'), 'w') as fword:
-        #     gt = ''.join([chr(c-13+97) if c-13+97>96 else chr(c-3+48) for c in ground_valid])
-        #     ot = ''.join([chr(c-13+97) if c-13+97>96 else chr(c-3+48) for c in output_valid])
-        #     fword.write(gt+'\n')
-        #     fword.write(ot)
-        label_file = DEFAULT_LABEL_FILE
-        with io.open(label_file, 'r', encoding='utf-8') as f:
-           labels = f.read().splitlines()
-        labels_list = enumerate(labels)
-        with open(os.path.join(output_dir, 'word.txt'), 'w', encoding='utf8') as fword:
-            gv=ground_valid
-            for i, c in enumerate(ground_valid):
-                for j, l in enumerate(labels):
-                   if (c-3)== j:
-                       gv[i]=l
-            
-            # print('aaa ground valid', gv, ground_valid)
-            fword.write(' '.join(gv))
-
-            ov=output_valid
-            for i, c in enumerate(output_valid):
-                for j, l in enumerate(labels):
-                   if (c-3)== j:
-                       ov[i]=l
-
-            fword.write(' '.join(ov))
-
+        with open(os.path.join(output_dir, 'word.txt'), 'w') as fword:
+            gt = ''.join([chr(c-3+33) for c in ground_valid])
+            ot = ''.join([chr(c-3+33) for c in output_valid])
+            fword.write(gt+'\n')
+            fword.write(ot)
             with open(filename, 'rb') as img_file:
                 img = Image.open(img_file)
                 w, h = img.size
@@ -539,8 +505,8 @@ class Model(object):
                     img_out = Image.fromarray(img_out_data.astype(np.uint8))
                     img_out.save(output_filename)
 
-                # plot ~ 2% of the time
-                if np.random.random() < 0.02:
+                # plot ~ 5% of the time
+                if np.random.random() < 0.05:
                     fig = plt.figure(figsize=(2, 6))
                     gs = matplotlib.gridspec.GridSpec(
                         2, 1, height_ratios=[len(ot)*2, 1],

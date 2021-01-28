@@ -2,11 +2,11 @@ __author__ = 'moonkey'
 
 import sys, argparse, logging
 
-logging.getLogger("tensorflow").setLevel(logging.ERROR)
-
 import numpy as np
 from PIL import Image
 import tensorflow as tf
+tf.logging.set_verbosity(tf.logging.ERROR)
+
 
 from model.model import Model
 import exp_config
@@ -164,4 +164,3 @@ def main(args, defaults):
 
 if __name__ == "__main__":
     main(sys.argv[1:], exp_config.ExpConfig)
-

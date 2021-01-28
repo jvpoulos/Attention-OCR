@@ -1,6 +1,5 @@
 __author__ = 'moonkey'
 
-import io
 import os
 import numpy as np
 from PIL import Image
@@ -8,10 +7,6 @@ from collections import Counter
 import pickle as cPickle
 import random, math
 from data_util.bucketdata import BucketData
-
-SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_LABEL_FILE = os.path.join(SCRIPT_PATH,
-'../labels/target-vocab.txt')
 
 class DataGen(object):
     GO = 1
@@ -21,13 +16,17 @@ class DataGen(object):
             data_root, annotation_fn,
             evaluate = False,
             valid_target_len = float('inf'),
-            img_width_range = (83, 2083), # iamdb train set
+           img_width_range = (83, 2083), # iamdb train set
             word_len = 81):
             # img_width_range = (354,1990), # sgdb
             # word_len = 74): 
-#            img_width_range = (135,2358), # rimes
-#            word_len = 100): 
-
+            # img_width_range = (306,911), # pardb
+            # word_len = 70): 
+           # img_width_range = (135,2358), # rimes
+           # word_len = 100): 
+            # img_width_range = (175,1801), # gwdb
+            # word_len = 87): 
+       
         """
         :param data_root:
         :param annotation_fn:
@@ -36,7 +35,7 @@ class DataGen(object):
         :return:
         """
 
-        img_height = 32
+        img_height = 64
         self.data_root = data_root
         if os.path.exists(annotation_fn):
             self.annotation_path = annotation_fn
@@ -44,13 +43,17 @@ class DataGen(object):
             self.annotation_path = os.path.join(data_root, annotation_fn)
 
         if evaluate:
-            self.bucket_specs = [(int(math.floor(64 / 4)), int(word_len + 2)), (int(math.floor(108 / 4)), int(word_len + 2)),
-                                 (int(math.floor(140 / 4)), int(word_len + 2)), (int(math.floor(256 / 4)), int(word_len + 2)),
-                                 (int(math.floor(img_width_range[1] / 4)), int(word_len + 2))]
+            self.bucket_specs = [(int(math.ceil(img_width_range[0])), int(math.ceil(img_width_range[1] / 8))),
+                             (int(math.ceil(img_width_range[1]/8 )), int(math.ceil(img_width_range[1] / 6))),
+                             (int(math.ceil(img_width_range[1]/6 )), int(math.ceil(img_width_range[1] / 4))), 
+                             (int(math.ceil(img_width_range[1] / 4)), int(math.ceil(img_width_range[1] / 3))), 
+                            (int(math.ceil(img_width_range[1] / 3)), int(math.ceil(img_width_range[1]/2)))] 
         else:
-            self.bucket_specs = [(int(64 / 4), 9 + 2), (int(108 / 4), 15 + 2),
-                             (int(140 / 4), 17 + 2), (int(256 / 4), 20 + 2),
-                             (int(math.ceil(img_width_range[1] / 4)), word_len + 2)]
+            self.bucket_specs = [(int(math.ceil(img_width_range[0])), int(math.ceil(img_width_range[1] / 8))),
+                             (int(math.ceil(img_width_range[1]/8 )), int(math.ceil(img_width_range[1] / 6))),
+                             (int(math.ceil(img_width_range[1]/6 )), int(math.ceil(img_width_range[1] / 4))), 
+                             (int(math.ceil(img_width_range[1] / 4)), int(math.ceil(img_width_range[1] / 3))), 
+                            (int(math.ceil(img_width_range[1] / 3)), int(math.ceil(img_width_range[1]/2)))] 
                             
         self.bucket_min_width, self.bucket_max_width = img_width_range
         self.image_height = img_height
@@ -69,13 +72,11 @@ class DataGen(object):
 
     def gen(self, batch_size):
         valid_target_len = self.valid_target_len
-        with open(self.annotation_path, 'r', encoding='utf-8') as ann_file:
+        with open(self.annotation_path, 'r') as ann_file:
             lines = ann_file.readlines()
-            # print('annotation_path ', self.annotation_path)
             random.shuffle(lines)
             for l in lines:
                 img_path, lex = l.strip().split()
-                # img_path, lex = l.rstrip().split('  ')
                 try:
                     img_bw, word = self.read_data(img_path, lex)
                     if valid_target_len < float('inf'):
@@ -153,35 +154,16 @@ class DataGen(object):
         # 0: PADDING, 1: GO, 2: EOS, 3: UNK
 
         word = [self.GO]
-
-        # try:
-        #     fp=open('outputs.txt', 'w+', encoding='utf-8')
-        # except:
-        #     print('could not open file'+outputs.txt)
-        #     quit()     
-        # for c in lex:
-        #     assert 32 < ord(c) < 126 or 191 < ord(c) < 252
-        #     if ord(c)==33:
-        #         word.append(ord(c)-33) # 0
-        #     if 37 < ord(c) < 61:
-        #         word.append(ord(c)-38+1) # 1 to 23
-        #     if 61 < ord(c) < 64:
-        #         word.append(ord(c)-38) # 24 to 25
-        # word.append(self.EOS)
-        # word = np.array(word, dtype=np.int32)
-        label_file = DEFAULT_LABEL_FILE
-        with io.open(label_file, 'r', encoding='utf-8') as f:
-           labels = f.read().splitlines()
-
         for c in lex:
-            # print('c ord(c)', c, ord(c))
-            for i, l in enumerate(labels):
-                if c== l:
-                   n=i+3
-                   # print('data gen c ord(c) l i n : ', c, ord(c), l, i, n)
-                   word.append(n)
-
+            assert 32 < ord(c) < 126 or 191 < ord(c) < 252
+            word.append(
+                ord(c)+3-33 if ord(c) < 126 else ord(c)-192+96
+            )
         word.append(self.EOS)
+        word = np.array(word, dtype=np.int32)
+        # word = np.array( [self.GO] +
+        # [ord(c) - 97 + 13 if ord(c) > 96 else ord(c) - 48 + 3
+        # for c in lex] + [self.EOS], dtype=np.int32)
 
         return img_bw, word
 

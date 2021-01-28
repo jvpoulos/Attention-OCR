@@ -138,6 +138,7 @@ class CNN(object):
         net = ConvReluBN(net, 512, (3, 3), 'conv_conv5', is_training)
         net = ConvRelu(net, 512, (3, 3), 'conv_conv6')
         net = max_2x1pool(net, 'conv_pool4')
+        net = max_2x1pool(net, 'conv_pool5') # for height 64
 
         net = ConvReluBN(net, 512, (2, 2), 'conv_conv7', is_training, "VALID")
         net = dropout(net, is_training)
@@ -158,5 +159,4 @@ class CNN(object):
     '''
     def save(self):
         pass
-
 

@@ -46,7 +46,7 @@ pip3 install {package}
 # Image-to-transcription on IAM:
 
 ### Data Preparation
-Follow steps for [IAM data preparation](https://github.com/jpuigcerver/Laia/tree/iam_new/egs/iam#data-preparation). IAM consists of ~10k images of handwritten text lines and their transcriptions. The code in the linked repo binarizes the images in a manner that preserves the original grayscale information, converts to JPEG, and scales to 64 pixel height. The code creates a folder for preprocessed images `imgs_proc` and transcriptions `htr/lang/char`.
+Follow steps for [IAM data preparation](https://github.com/jpuigcerver/Laia/tree/iam_new/egs/iam#data-preparation). IAM consists of approx. 10k images of handwritten text lines and their transcriptions. The code in the linked repo binarizes the images in a manner that preserves the original grayscale information, converts to JPEG, and scales to 64 pixel height. The code creates a folder for preprocessed images `imgs_proc` and transcriptions `htr/lang/char`.
 
 ![IAM original](demo/a01-000u-00.png)
 ![IAM preprocessed](demo/a01-000u-00.jpg)
@@ -60,27 +60,9 @@ Create a file `lines_train.txt` from the transcription `tr.txt` that replaces wh
 ```
 Also create files `lines_val.txt` and `lines_test.txt` from `htr/lang/word/va.txt` and `htr/lang/word/te.txt`, respectively, following the same format as above. 
 
-Create a file `src/labels/target_vocab.txt` with all unique target characters in the training set, with the number of characters equal to the value of `target-vocab-size`, e.g.:
-
-```
-!
-&
-0
-1
-:
-;
-A
-B
-a
-b
-|
-```
-
 Assume that the working directory is `Attention-OCR`. The data files within `Attention-OCR` should have the structure:
 
 - `src`
-  -  `labels`
-    - `target_vocab.txt`
 - `iamdb`
   - `imgs_proc` (folder of JPEG images)
   - `lines_train.txt`
@@ -90,25 +72,25 @@ Assume that the working directory is `Attention-OCR`. The data files within `Att
 ### Train
 
 ```
-python3 src/launcher.py \
+python src/launcher.py \
 --phase=train \
 --data-path=lines_train.txt \
 --data-base-dir=iamdb \
 --model-dir=model_iamdb_softmax \
 --log-path=log_iamdb_train_softmax.txt \
---reg-val=0.5 \
+--reg-val=0.001 \
 --attn-num-hidden=256 \
 --attn-num-layers=2 \
---batch-size=4 \
---num-epoch=150 \
+--batch-size=8 \
+--num-epoch=200 \
 --steps-per-checkpoint=500 \
 --opt-attn=softmax \
 --target-embedding-size=5 \
---target-vocab-size=79 \
---initial-learning-rate=0.0001 \
+--target-vocab-size=124 \
+--initial-learning-rate=0.5 \
 --augmentation=0.1 \
 --gpu-id=0 \
---no-load-model
+--load-model
 ```
 
 You will see something like the following output in `log_iamdb_train.txt`:
@@ -135,16 +117,6 @@ Model checkpoints saved in `model_iamdb_softmax `.
 
 ## Test model and visualize attention
 
-We provide a trained model on IAM:
-
-```
-wget https://www.dropbox.com/s/ujxeahr1voo0sl8/model_iamdb_softmax.tar.gz
-```
-
-```
-tar -xvzf model_iamdb_softmax.tar.gz
-```
-
 ```
 python3 src/launcher.py \
 --phase=test \
@@ -153,17 +125,23 @@ python3 src/launcher.py \
 --data-base-dir=iamdb \
 --model-dir=model_iamdb_softmax \
 --log-path=log_iamdb_test.txt \
+--reg-val=0.001 \
 --attn-num-hidden=256 \
 --attn-num-layers=2 \
+--batch-size=8 \
+--num-epoch=200 \
+--steps-per-checkpoint=500 \
 --opt-attn=softmax \
 --target-embedding-size=5 \
---target-vocab-size=79 \
+--target-vocab-size=124 \
+--initial-learning-rate=0.5 \
+--augmentation=0.1 \
 --gpu-id=0 \
 --load-model \
 --output-dir=softmax_results
 ```
 
-You will see something like the following output in `log_iamdb_val.txt`:
+You will see something like the following output in `log_iamdb_test.txt`:
 
 ```
 2017-05-04 20:06:32,116 root  INFO     Reading model parameters from model_iamdb_softmax/translate.ckpt-731000
@@ -193,7 +171,7 @@ This example plots the attention alignment over an image:
 Default parameters set in the file `src/exp_config.py`.
 
 - Control
-    * `GPU-ID`: ID number of the GPU.
+    * `GPU-ID`: ID number of the GPU. Default is 0. 
     * `phase`: Determine whether to 'train' or 'test'. Default is 'test'.
     * `visualize`: Valid if `phase` is set to test. Output the attention maps on the original image. Set flag to `no-visualize` to test without visualizing. 
     * `load-model`: Load model from `model-dir` or not.
