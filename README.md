@@ -117,6 +117,17 @@ Model checkpoints saved in `model_iamdb_softmax `.
 
 ## Test model and visualize attention
 
+We provide a trained model on IAM:
+
+```
+wget https://www.dropbox.com/s/vq77vehdexnioow/model_iamdb_softmax_124500.tar.gz
+```
+
+```
+tar -xvzf model_iamdb_softmax_124500.tar.gz
+```
+
+
 ```
 python3 src/launcher.py \
 --phase=test \
