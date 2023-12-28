@@ -9,19 +9,15 @@ Attention Networks"](https://arxiv.org/abs/1712.04046).
 Please cite the paper if you use this code for academic research:
 
 ```
-@article{DBLP:journals/corr/abs-1712-04046,
-  author    = {Jason Poulos and
-               Rafael Valle},
-  title     = {Character-Based Handwritten Text Transcription with Attention Networks},
-  journal   = {CoRR},
-  volume    = {abs/1712.04046},
-  year      = {2017},
-  url       = {http://arxiv.org/abs/1712.04046},
-  archivePrefix = {arXiv},
-  eprint    = {1712.04046},
-  timestamp = {Mon, 13 Aug 2018 16:47:16 +0200},
-  biburl    = {https://dblp.org/rec/bib/journals/corr/abs-1712-04046},
-  bibsource = {dblp computer science bibliography, https://dblp.org}
+@article{poulos2021character,
+  title={Character-based handwritten text transcription with attention networks},
+  author={Poulos, Jason and Valle, Rafael},
+  journal={Neural Computing and Applications},
+  volume={33},
+  number={16},
+  pages={10563--10573},
+  year={2021},
+  publisher={Springer}
 }
 ```
 
@@ -126,7 +122,6 @@ wget https://www.dropbox.com/s/vq77vehdexnioow/model_iamdb_softmax_124500.tar.gz
 ```
 tar -xvzf model_iamdb_softmax_124500.tar.gz
 ```
-
 
 ```
 python3 src/launcher.py \
