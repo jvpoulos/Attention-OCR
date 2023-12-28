@@ -4,7 +4,7 @@
 Bidirectional LSTM encoder and attention-enhanced GRU decoder stacked on a multilayer CNN for image-to-transcription. 
 
 This repository is associated with the paper ["Character-Based Handwritten Text Transcription with
-Attention Networks"](https://arxiv.org/abs/1712.04046).
+Attention Networks"](https://link.springer.com/article/10.1007/s00521-021-05813-1).
 
 Please cite the paper if you use this code for academic research:
 
