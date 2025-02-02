@@ -116,7 +116,7 @@ Model checkpoints saved in `model_iamdb_softmax `.
 We provide a trained model on IAM:
 
 ```
-wget https://www.dropbox.com/s/vq77vehdexnioow/model_iamdb_softmax_124500.tar.gz
+wget https://drive.google.com/file/d/1ut6bcDCvZd2-sYFvkkGRyYlUrHMlwl_B/view?usp=sharing
 ```
 
 ```
